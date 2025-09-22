@@ -1,0 +1,196 @@
+/* src/components/ProjectCarousel.css */
+
+.project-carousel-container {
+  width: 100%;
+  padding: 50px 0;
+  position: relative; /* Добавляем для позиционирования стрелок */
+}
+
+.carousel-viewport {
+  width: clamp(340px, 90vw, 900px); /* адаптивная ширина окна */
+  margin: 0 auto;
+  overflow: hidden; /* прячем всё за пределами прямоугольника */
+}
+
+.swiper {
+  /* --- 👇 ВОТ ОН, СУКА, ГЛАВНЫЙ ФИКС! ОГРАНИЧИВАЕМ ШИРИНУ! 👇 --- */
+  width: 100%;
+  max-width: none; /* ширина управляется оберткой-viewport */
+  margin: 0 auto;
+  /* ----------------------------------------------------------------- */
+  
+  padding-top: 50px;
+  padding-bottom: 50px;
+}
+
+.swiper-slide {
+  background-position: center;
+  background-size: cover;
+  width: clamp(240px, 28vw, 320px); /* адаптивный размер карточек */
+  height: clamp(240px, 28vw, 320px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  /* Разрешаем события курсора, но Swiper может накладывать слои — поднимем z-index содержимого */
+}
+
+/* ===== МОБИЛЬНАЯ АДАПТАЦИЯ КАРУСЕЛИ ===== */
+
+/* Планшеты */
+@media (max-width: 1024px) {
+  .carousel-viewport {
+    width: clamp(300px, 85vw, 800px);
+  }
+  
+  .swiper-slide {
+    width: clamp(220px, 30vw, 300px);
+    height: clamp(220px, 30vw, 300px);
+  }
+}
+
+/* Мобильные устройства */
+@media (max-width: 768px) {
+  .project-carousel-container {
+    padding: 30px 0;
+  }
+  
+  .carousel-viewport {
+    width: clamp(280px, 90vw, 600px);
+  }
+  
+  .swiper {
+    padding-top: 30px;
+    padding-bottom: 30px;
+  }
+  
+  .swiper-slide {
+    width: clamp(200px, 35vw, 280px);
+    height: clamp(200px, 35vw, 280px);
+    display: none; /* показываем только центральный слайд */
+  }
+  .swiper-slide.swiper-slide-active { display: flex; }
+  /* Если активный слайд — дубликат (loop), тоже показываем его */
+  .swiper-slide-duplicate.swiper-slide-active { display: flex !important; }
+  
+  .normal-card {
+    border-radius: 12px;
+  }
+
+  /* Прячем стрелки на мобильных */
+  .swiper-button-next,
+  .swiper-button-prev { display: none !important; }
+}
+
+/* Маленькие мобильные */
+@media (max-width: 480px) {
+  .project-carousel-container {
+    padding: 20px 0;
+  }
+  
+  .carousel-viewport {
+    width: 95vw;
+  }
+  
+  .swiper-slide {
+    width: clamp(180px, 40vw, 250px);
+    height: clamp(180px, 40vw, 250px);
+  }
+  
+  .normal-card {
+    border-radius: 8px;
+  }
+}
+
+/* Скрыть клоны, которые Swiper добавляет для loop */
+.swiper-slide-duplicate {
+  display: none !important;
+}
+
+/* СТИЛИ ДЛЯ ОБЫЧНОЙ КАРТОЧКИ */
+.normal-card {
+  width: 100%;
+  height: 100%;
+  border-radius: 16px;
+  overflow: hidden;
+  position: relative;
+  cursor: pointer;
+  transition: transform 0.4s ease;
+  background: #111;
+}
+
+/* Обёртка со свечением для MRSLV */
+.normal-card-wrapper {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  z-index: 2;
+}
+
+.normal-card img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.5s ease;
+}
+
+.normal-card.is-active:hover img {
+  transform: scale(1.05);
+}
+
+.normal-card .overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none; /* по умолчанию, чтобы не мешать */
+}
+
+.normal-card.is-active:hover .overlay {
+  opacity: 1;
+  pointer-events: auto; /* при ховере — разрешаем взаимодействие внутри оверлея (ползунок) */
+}
+
+/* --- 👇 СТИЛИ ДЛЯ НАВИГАЦИИ (СТРЕЛКИ) - ИСПРАВЛЕННЫЕ! 👇 --- */
+.swiper-button-next,
+.swiper-button-prev {
+  color: #FFFFFF !important;
+  top: 55%;
+  transform: translateY(-50%);
+  width: 44px; /* Задаём им размер */
+  height: 44px;
+  background-color: rgba(0, 0, 0, 0.3); /* Полупрозрачный фон для читаемости */
+  border-radius: 50%; /* Делаем их круглыми */
+  transition: opacity 0.3s ease;
+}
+
+/* Скрываем их по умолчанию */
+.swiper-button-next,
+.swiper-button-prev {
+  opacity: 0;
+}
+
+/* Показываем только при наведении на ВСЮ карусель */
+.project-carousel-container:hover .swiper-button-next,
+.project-carousel-container:hover .swiper-button-prev {
+  opacity: 1;
+}
+
+/* Убираем стандартные иконки Swiper'а */
+.swiper-button-next:after,
+.swiper-button-prev:after {
+  font-size: 20px !important;
+  font-weight: bold;
+}
+
+/* Ставим их по краям ВНУТРИ контейнера */
+.swiper-button-prev {
+  left: 10px;
+}
+
+.swiper-button-next {
+  right: 10px;
+}

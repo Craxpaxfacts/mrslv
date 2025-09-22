@@ -1,0 +1,17 @@
+music-portfolio/
+├── public/
+│   ├── index.html
+│   └── favicon.ico
+├── src/
+│   ├── assets/
+│   ├── components/
+│   │   ├── Section.jsx
+│   │   ├── MediaCarousel.jsx
+│   │   └── SplashCursor.jsx
+│   ├── App.jsx
+│   ├── main.jsx
+│   ├── App.css
+│   └── index.css
+├── package.json
+├── vite.config.js
+└── README.md

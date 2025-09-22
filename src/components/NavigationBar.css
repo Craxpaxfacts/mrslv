@@ -1,0 +1,160 @@
+/* src/components/NavigationBar.css */
+/* From Uiverse.io by gagan-gv */
+
+.social-button {
+  height: 4em;
+  width: 18em;
+  border: none;
+  border-radius: 40px;
+  background-color: #fff;
+  cursor: pointer;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.social-button span {
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: black;
+  height: 3em;
+  width: 14em;
+  border-radius: 25px;
+  color: #fff;
+  font-size: 18px;
+  letter-spacing: 3px;
+  transition: all 0.5s;
+  position: absolute;
+}
+
+.social-button .container {
+  z-index: -1;
+  width: 0;
+  height: 100%;
+  position: absolute;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  transition: all 0.4s;
+  overflow: hidden;
+}
+
+.social-button .container a {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  transition: all 0.3s ease;
+}
+
+.social-button .container a:hover {
+  background-color: rgba(0, 0, 0, 0.1);
+}
+
+.social-button .container img {
+  width: 20px;
+  height: 20px;
+  filter: invert(1); /* Белые иконки */
+}
+
+.social-button:hover span {
+  width: 0;
+}
+
+.social-button:hover .container {
+  z-index: 2;
+  width: 100%;
+}
+
+/* ===== МОБИЛЬНАЯ АДАПТАЦИЯ КНОПКИ ===== */
+
+/* Планшеты */
+@media (max-width: 1024px) {
+  .social-button {
+    width: 16em;
+    height: 3.5em;
+  }
+  
+  .social-button span {
+    width: 12em;
+    height: 2.5em;
+    font-size: 16px;
+  }
+  
+  .social-button .container a {
+    width: 36px;
+    height: 36px;
+  }
+  
+  .social-button .container img {
+    width: 18px;
+    height: 18px;
+  }
+}
+
+/* Мобильные устройства */
+@media (max-width: 768px) {
+  .social-button {
+    width: 14em;
+    height: 3em;
+  }
+  
+  .social-button span {
+    width: 10em;
+    height: 2.2em;
+    font-size: 14px;
+    letter-spacing: 2px;
+  }
+  
+  .social-button .container {
+    gap: 8px;
+  }
+  
+  .social-button .container a {
+    width: 32px;
+    height: 32px;
+    min-width: 32px; /* Минимальный размер для тач */
+  }
+  
+  .social-button .container img {
+    width: 16px;
+    height: 16px;
+  }
+}
+
+/* Маленькие мобильные */
+@media (max-width: 480px) {
+  .social-button {
+    width: 12em;
+    height: 2.8em;
+  }
+  
+  .social-button span {
+    width: 8.5em;
+    height: 2em;
+    font-size: 12px;
+    letter-spacing: 1px;
+  }
+  
+  .social-button .container {
+    gap: 6px;
+  }
+  
+  .social-button .container a {
+    width: 28px;
+    height: 28px;
+    min-width: 28px;
+  }
+  
+  .social-button .container img {
+    width: 14px;
+    height: 14px;
+  }
+}

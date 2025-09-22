@@ -1,0 +1,77 @@
+.gradient-menu-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 220px;
+  padding: 40px 0 80px;
+}
+
+.gradient-menu-list {
+  display: flex;
+  gap: 24px;
+}
+
+.gradient-menu-item {
+  position: relative;
+  width: 60px;
+  height: 60px;
+  background: #fff;
+  border-radius: 9999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.35);
+  transition: all 500ms ease;
+  cursor: pointer;
+  overflow: hidden;
+}
+.gradient-menu-item:hover { width: 180px; box-shadow: none; }
+
+.gmi-bg {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(45deg, var(--gradient-from), var(--gradient-to));
+  opacity: 0;
+  transition: opacity 500ms ease;
+}
+.gradient-menu-item:hover .gmi-bg { opacity: 1; }
+
+.gmi-blur {
+  position: absolute;
+  top: 10px;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border-radius: inherit;
+  background: linear-gradient(45deg, var(--gradient-from), var(--gradient-to));
+  filter: blur(15px);
+  opacity: 0;
+  z-index: -1;
+  transition: opacity 500ms ease;
+}
+.gradient-menu-item:hover .gmi-blur { opacity: 0.5; }
+
+.gmi-icon { position: relative; z-index: 2; transition: transform 500ms ease; }
+.gradient-menu-item:hover .gmi-icon { transform: scale(0); }
+.gmi-icon-inner { font-size: 24px; color: #6b7280; }
+
+.gmi-title {
+  position: absolute;
+  z-index: 2;
+  color: #fff;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 14px;
+  transform: scale(0);
+  transition: transform 500ms ease 150ms;
+}
+.gradient-menu-item:hover .gmi-title { transform: scale(1); }
+
+
+
+
+
+
+
+

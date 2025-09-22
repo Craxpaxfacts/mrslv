@@ -1,0 +1,64 @@
+:root {
+  --black: #000000;
+  --white: #ffffff;
+  --gray: #aaaaaa;
+}
+
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: geometricPrecision;
+  text-rendering: optimizeLegibility;
+  font-synthesis: none;
+  background-color: var(--black);
+  color: var(--white);
+  /* Let Lenis handle smooth behavior to avoid double-easing */
+  scroll-behavior: auto;
+  overflow-x: hidden;
+}
+
+* {
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+}
+
+
+.love-light-regular {
+  font-family: "Love Light", cursive;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.luxurious-script-regular {
+  font-family: "Luxurious Script", cursive;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.great-vibes-regular {
+  font-family: "Great Vibes", cursive;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.rubik-burned-regular {
+  font-family: "Rubik Burned", system-ui;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.im-fell-great-primer-regular {
+  font-family: "IM Fell Great Primer", serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.im-fell-great-primer-regular-italic {
+  font-family: "IM Fell Great Primer", serif;
+  font-weight: 400;
+  font-style: italic;
+}

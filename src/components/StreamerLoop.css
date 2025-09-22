@@ -1,0 +1,89 @@
+/* src/components/StreamerLoop.css */
+
+.streamer-loop-container {
+  /* Mobile-first: ширина совпадает с центральной карточкой слайдера */
+  width: clamp(200px, 35vw, 280px);
+  margin: 0 auto;
+
+  overflow: hidden; /* Жёсткая обрезка по краям */
+  position: relative;
+  pointer-events: auto;
+  -webkit-mask-image: none;
+  mask-image: none;
+}
+
+.streamer-track {
+  display: flex;
+  width: max-content;
+  animation: scroll 22s linear infinite;
+  will-change: transform;
+}
+
+@keyframes scroll {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
+/* Убираем паузу при hover — лента всегда движется */
+
+.streamer-item {
+  display: flex;
+  align-items: center;
+  margin: 0 14px;
+  transition: opacity 0.3s ease;
+  pointer-events: auto;
+  position: relative;
+  z-index: 2;
+}
+
+.streamer-item:hover {
+  opacity: 0.7;
+}
+
+.streamer-item img {
+  height: 18px;
+  width: auto;
+  filter: grayscale(1) brightness(1.5);
+  transition: filter 0.3s ease;
+}
+
+.streamer-item:hover img {
+  filter: grayscale(0) brightness(1);
+}
+
+/* Планшет и десктоп: возвращаем исходные размеры и фиксированную ширину 320px */
+@media (min-width: 768px) {
+  .streamer-loop-container { width: clamp(220px, 30vw, 300px); }
+  .streamer-item { margin: 0 20px; }
+  .streamer-item img { height: 22px; }
+}
+
+@media (min-width: 1024px) {
+  .streamer-loop-container {
+    width: clamp(240px, 28vw, 320px);
+    /* ВОЗВРАЩАЕМ МАСКУ ДЛЯ ДЕСКТОПА (как было изначально) */
+    -webkit-mask-image: linear-gradient(to right, transparent 0%, black 12%, black 88%, transparent 100%);
+    mask-image: linear-gradient(to right, transparent 0%, black 12%, black 88%, transparent 100%);
+  }
+  .streamer-item { margin: 0 25px; }
+  .streamer-item img { height: 25px; }
+}
+
+/* Сверхмалые экраны: повторяем точные значения .swiper-slide из ProjectCarousel.css */
+@media (max-width: 480px) {
+  .streamer-loop-container { width: clamp(180px, 40vw, 250px); }
+}
+
+/* Убираем паузу по hover на тач-устройствах, чтобы не залипала анимация */
+@media (hover: none) and (pointer: coarse) {
+  .streamer-loop-container:hover .streamer-track { animation-play-state: running; }
+}
+
+/* Перекрываем глобальное отключение анимаций на очень маленьких экранах */
+@media (max-width: 480px) {
+  .streamer-track {
+    animation-duration: 22s !important;
+    animation-iteration-count: infinite !important;
+    animation-play-state: running !important;
+  }
+}

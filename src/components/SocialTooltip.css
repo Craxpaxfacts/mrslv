@@ -1,0 +1,60 @@
+.social-tooltip-list {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+/* Базовые токены Tailwind-заменителей */
+.bg-background { background: rgba(255,255,255,0.08); border: 1px solid rgba(166,134,255,0.35); backdrop-filter: blur(4px); }
+.text-foreground { color: #ffffff; }
+
+/* чтобы внутри не было лишних отступов/линий у картинок */
+.social-tooltip-list img { display: block; }
+
+/* Утилиты, которые использовались в tailwind-классах */
+.w-12 { width: 48px; }
+.h-12 { height: 48px; }
+.w-7 { width: 28px; }
+.h-7 { height: 28px; }
+
+.rounded-full { border-radius: 9999px; }
+.rounded-md { border-radius: 8px; }
+.relative { position: relative; }
+.absolute { position: absolute; }
+.overflow-hidden { overflow: hidden; }
+.transition-all { transition-property: all; }
+.duration-300 { transition-duration: 300ms; }
+.ease-in-out { transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1); }
+.group { }
+.group-hover\:shadow-lg { }
+.group-hover\:opacity-100 { }
+.group-hover\:visible { }
+
+/* Нам нужны только эффекты на hover группы — реализуем напрямую на li:hover */
+li.group:hover .group-hover\:shadow-lg { box-shadow: 0 8px 24px rgba(166,134,255,0.35); }
+li.group:hover .group-hover\:opacity-100 { opacity: 1; }
+li.group:hover .group-hover\:visible { visibility: visible; }
+
+/* Позиционирование тултипа */
+.bottom-\[-40px\] { bottom: -40px; }
+.bottom-\[-50px\] { bottom: -50px; }
+.left-1\/2 { left: 50%; }
+.-translate-x-1\/2 { transform: translateX(-50%); }
+.px-2\.5 { padding-left: 10px; padding-right: 10px; }
+.py-1\.5 { padding-top: 6px; padding-bottom: 6px; }
+.text-sm { font-size: 14px; }
+.whitespace-nowrap { white-space: nowrap; }
+.opacity-0 { opacity: 0; }
+.invisible { visibility: hidden; }
+
+
+
+
+
+
+
+

@@ -1,0 +1,14 @@
+/* src/components/HeroSection.css */
+
+/* === MOBILE-FIRST === */
+.hero-section {
+  position: relative;
+  height: 450px; /* Задаем КОНКРЕТНУЮ, не очень большую высоту для мобильных */
+}
+
+/* === MEDIA QUERIES === */
+@media (min-width: 1024px) {
+  .hero-section {
+    height: 100vh; /* А для десктопов возвращаем высоту во весь экран */
+  }
+}

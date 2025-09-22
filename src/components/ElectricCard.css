@@ -1,0 +1,62 @@
+/* src/components/ElectricCard.css */
+.electric-card {
+  position: relative;
+  width: 300px;
+  height: 300px;
+  border-radius: 16px;
+  overflow: hidden;
+  cursor: pointer;
+  background: rgba(20, 20, 20, 0.5);
+  backdrop-filter: blur(10px);
+}
+
+.eb-svg { position: absolute; width: 0; height: 0; }
+.eb-layers { position: absolute; inset: 0; pointer-events: none; z-index: 10;}
+.eb-stroke, .eb-glow-1, .eb-glow-2, .eb-background-glow {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  border: var(--eb-border-width) solid var(--electric-border-color);
+}
+.eb-glow-1 { filter: blur(5px); opacity: 0.8; }
+.eb-glow-2 { filter: blur(10px); opacity: 0.5; }
+.eb-background-glow {
+  border: none;
+  background: radial-gradient(circle, var(--electric-border-color) 0%, transparent 70%);
+  opacity: 0.1;
+  filter: blur(20px);
+}
+
+.eb-content {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+}
+.album-cover {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.4s ease;
+  position: relative; 
+z-index: 1;
+
+}
+.electric-card:hover .album-cover {
+  transform: scale(1.05);
+}
+.overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  z-index: 20; /* Ensure overlay sits above electric glow layers */
+  pointer-events: auto;
+}
+.electric-card.is-active:hover .overlay, .electric-card.is-playing .overlay {
+  opacity: 1;
+}

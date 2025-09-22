@@ -1,0 +1,232 @@
+/* ================= MOBILE-FIRST ================= */
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  background-color: #000;
+  color: #fff;
+  overflow-x: hidden;
+}
+
+/* Основной контейнер приложения */
+.app {
+  position: relative;
+  z-index: 2;
+}
+
+/* === Секции === */
+:root {
+  --content-max-width: 1100px;
+  --gap-icons-to-divider: 60px;
+  --gap-divider-to-next-title: 80px;
+}
+
+.section {
+  min-height: min(100vh, 700px);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 20px 16px;
+  padding-top: var(--gap-divider-to-next-title);
+  box-sizing: border-box;
+  text-align: center;
+}
+
+.section-content {
+  width: 100%;
+  max-width: 95%;
+  margin: 0 auto;
+}
+
+.app > div:first-child .section {
+  padding-top: 20px;
+}
+
+/* Cognesthetic секция */
+.section.cognesthetic {
+  --gap-divider-to-next-title: 120px;
+}
+
+/* === Заголовки === */
+.title-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 120px;
+  margin-bottom: 1rem;
+}
+
+.title-name,
+.title-lastname {
+  font-family: 'Cinzel Decorative', serif;
+  font-weight: 700;
+  font-size: clamp(1.5rem, 6vw, 3rem);
+  color: #fff;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.title-lastname {
+  margin-top: -0.9em;
+}
+
+.subtitle {
+  font-family: 'Monsieur La Doulaise', cursive;
+  font-size: clamp(2rem, 3.5vw, 1.5rem);
+  font-weight: 400;
+  color: #a686ff;
+  margin: 1rem 0;
+  text-shadow: 0 0 0.6px rgba(166, 134, 255, 0.55);
+}
+
+.description {
+  font-size: clamp(0.8rem, 2.8vw, 1rem);
+  line-height: 1.5;
+  color: #fff;
+  max-width: 600px;
+  margin: 0 auto 1rem auto;
+}
+
+/* === Divider === */
+.divider {
+  height: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.divider::before {
+  content: "";
+  display: block;
+  width: 90%;
+  height: 1px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, rgba(0,0,0,0) 0%, rgba(166,134,255,0.3) 8%, #b396ff 50%, rgba(166,134,255,0.3) 92%, rgba(0,0,0,0) 100%);
+  box-shadow: 0 0 5px rgba(166,134,255,0.3);
+}
+
+/* === Ссылки на стриминги === */
+.links-container {
+  margin-top: -40px;
+  margin-bottom: var(--gap-icons-to-divider);
+  position: relative;
+  z-index: 5;
+}
+
+.streaming-link {
+  color: #a9a9a9;
+  text-decoration: none;
+  font-size: 1rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  transition: color 0.1s ease;
+}
+
+.streaming-link:hover {
+  color: #fff;
+}
+
+/* === Вращающийся заголовок / canvas === */
+.cognesthetic-circular-title {
+  margin-bottom: 3rem;
+}
+
+.liquid-ether-container,
+.liquid-ether-container canvas {
+  pointer-events: none !important;
+}
+
+/* ===== FOOTER ===== */
+.app-footer { display: flex; }
+
+@media (max-width: 768px) {
+  .app-footer {
+    padding: 24px 16px !important;
+    margin-top: -60px !important;
+  }
+}
+
+/* ================= MEDIA QUERIES ================= */
+/* Планшеты */
+@media (min-width: 768px) {
+  .section {
+    min-height: min(100vh, 800px);
+    padding: 30px 20px;
+  }
+
+  .section-content {
+    max-width: 90%;
+  }
+
+  .title-name,
+  .title-lastname {
+    font-size: clamp(2rem, 8vw, 5rem);
+  }
+}
+
+/* Десктоп */
+@media (min-width: 1024px) {
+  .section {
+    min-height: min(100vh, 900px);
+    padding: 40px;
+  }
+
+  .section-content {
+    max-width: var(--content-max-width);
+  }
+
+  .title-name,
+  .title-lastname {
+    font-size: clamp(2.5rem, 10vw, 6rem);
+  }
+
+  .subtitle {
+    font-size: clamp(1.2rem, 4vw, 2rem);
+  }
+
+  .divider {
+    height: 60px;
+  }
+
+  .divider::before {
+    width: min(100%, var(--content-max-width));
+    box-shadow: 0 0 12px rgba(166,134,255,0.8), 0 0 32px rgba(166,134,255,0.45), 0 0 64px rgba(166,134,255,0.28);
+    animation: dividerPulse 3.6s ease-in-out infinite;
+  }
+}
+
+@keyframes dividerPulse {
+  0%, 100% { filter: brightness(1.05); opacity: 1; }
+  50% { filter: brightness(1.35); opacity: 1; }
+}
+
+/* ================= MOBILE OPTIMIZATION ================= */
+@media (max-width: 768px) {
+  .liquid-ether-container {
+    display: none !important;
+  }
+
+  body {
+    background: linear-gradient(135deg, #000428 0%, #004e92 50%, #000000 100%);
+    background-attachment: fixed;
+  }
+
+  .divider::before {
+    animation: none;
+    filter: none;
+  }
+
+  .normal-card:hover img {
+    transform: none;
+  }
+}
+
+@media (max-width: 480px) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

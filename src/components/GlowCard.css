@@ -1,0 +1,15 @@
+.glow-card {
+  border-radius: 16px;
+  position: relative;
+  display: grid;
+  grid-template-rows: 1fr auto;
+  box-shadow: 0 1rem 2rem -1rem rgba(0,0,0,0.6);
+  padding: 16px;
+  gap: 16px;
+  backdrop-filter: blur(5px);
+  overflow: hidden;
+  isolation: isolate; /* чтобы псевдо-элементы и фон корректно накладывались */
+  pointer-events: auto; /* карточка сама ловит hover/pointer */
+}
+
+
