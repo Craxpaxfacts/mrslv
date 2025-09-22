@@ -393,7 +393,8 @@ body {
 
 /* Планшеты */
 @media (min-width: 768px) {
-  :root {--gap-icons-to-divider: 60px;
+  :root {
+    --gap-icons-to-divider: 60px;
     --gap-divider-to-next-title: 80px;
   }
 
@@ -511,3 +512,4 @@ body {
     border-color: #fff;
   }
 }
+
