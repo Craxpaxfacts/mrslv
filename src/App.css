@@ -264,7 +264,8 @@ body {
 }
 
 /* ================= MOBILE OPTIMIZATION ================= */
-@media (max-width: 480px) {
+/* Общие стили для всех мобильных устройств */
+@media (max-width: 767px) {
   :root {
     --gap-icons-to-divider: 20px;
     --gap-divider-to-next-title: 30px;
@@ -273,6 +274,11 @@ body {
   .section {
     min-height: 100vh;
     padding: 0.5rem;
+  }
+
+  .section-content {
+    max-width: 95%;
+    padding: 0 0.25rem;
   }
 
   .title-name,
@@ -291,12 +297,10 @@ body {
     padding: 0 0.25rem;
   }
 
-  /* FuzzyText для мобильных - увеличиваем размер */
   .fuzzy-text-container {
     margin: 1.5rem 0;
   }
 
-  /* Исправляем размер глитч-эффекта MRSLV на мобильных */
   .fuzzy-text-container canvas {
     transform: scale(1.2) !important; /* Увеличиваем на 20% */
     max-width: none !important;
@@ -351,47 +355,41 @@ body {
   }
 }
 
-/* ================= MEDIA QUERIES ================= */
-/* Маленькие мобильные устройства */
-@media (min-width: 481px) and (max-width: 767px) {
-  :root {
-    --gap-icons-to-divider: 40px;
-    --gap-divider-to-next-title: 50px;
-  }
-
-  .section {
-    padding: 1rem;
-  }
-
-  .section-content {
-    max-width: 95%;
-    padding: 0 0.75rem;
-  }
-
+/* Дополнительные стили для очень маленьких экранов (например, iPhone SE, iPhone 13 Pro Max) */
+@media (max-width: 428px) {
   .title-name,
   .title-lastname {
-    font-size: clamp(1.3rem, 5.5vw, 3.5rem);
+    font-size: clamp(0.9rem, 7vw, 2.2rem);
   }
 
   .subtitle {
-    font-size: clamp(1.3rem, 3.8vw, 1.8rem);
+    font-size: clamp(0.9rem, 4.5vw, 1.3rem);
   }
 
   .description {
-    max-width: 90%;
-  }
-
-  .share-button-container {
-    width: 200px;
-    height: 50px;
+    font-size: clamp(0.8rem, 3.5vw, 0.9rem);
   }
 
   .fuzzy-text-container canvas {
-    transform: scale(1.1) !important;
+    transform: scale(1.1) !important; /* Чуть меньше увеличение для очень маленьких экранов */
+  }
+
+  .share-button-container {
+    width: 140px;
+    height: 40px;
+  }
+
+  .main-button {
+    font-size: 0.8rem;
+  }
+
+  .icon-button {
+    width: 40px;
+    height: 40px;
   }
 }
 
-/* Планшеты */
+/* Планшеты и большие мобильные устройства */
 @media (min-width: 768px) {
   :root {
     --gap-icons-to-divider: 60px;
@@ -498,18 +496,5 @@ body {
 }
 
 /* High contrast mode support */
-@media (prefers-contrast: high) {
-  .subtitle {
-    color: #fff;
-    text-shadow: none;
-  }
-  
-  .streaming-link {
-    color: #fff;
-  }
 
-  .main-button {
-    border-color: #fff;
-  }
-}
 
