@@ -2,6 +2,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useAudioPlayer } from '../hooks/useAudioPlayer';
 import { setVolume01, getVolume01 } from '../lib/audioController';
+import Slider from './ui/Slider';
 import './MobilePlayer.css';
 
 // Иконки в стиле Яндекс.Музыки
@@ -49,8 +50,8 @@ const MobilePlayer = ({ tracks, projectId }) => {
     }
   }, [currentTime, duration]);
 
-  const handleVolumeChange = (e) => {
-    const newVolume = parseInt(e.target.value);
+  const handleVolumeChange = (values) => {
+    const [newVolume] = values;
     setVolume(newVolume);
     setVolume01(newVolume / 100);
   };
@@ -149,18 +150,13 @@ const MobilePlayer = ({ tracks, projectId }) => {
 
         <div className="volume-section">
           <VolumeIcon />
-          <div className="volume-container">
-            <input
-              type="range"
-              min="0"
-              max="100"
-              value={volume}
-              onChange={handleVolumeChange}
-              className="volume-slider"
-            />
-            <div className="volume-fill" style={{ width: `${volume}%` }} />
-          </div>
-          <span className="volume-value">{volume}</span>
+          <Slider
+            className="volume-slider"
+            min={0}
+            max={100}
+            value={[volume]}
+            onValueChange={handleVolumeChange}
+          />
         </div>
       </div>
     </div>
