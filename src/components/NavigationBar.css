@@ -76,85 +76,44 @@
 /* ===== МОБИЛЬНАЯ АДАПТАЦИЯ КНОПКИ ===== */
 
 /* Планшеты */
-@media (max-width: 1024px) {
+@media (max-width: 1023px) {
   .social-button {
-    width: 16em;
-    height: 3.5em;
+    /* !!! ДЕЛАЕМ КНОПКУ МЕНЬШЕ !!! */
+    height: 46px; /* Уменьшили общую высоту */
+
+    width: 59%; 
+    max-width: 400px;
+    /* Скругление делаем большим, чтобы гарантировать форму таблетки */
+    border-radius: 50px;
   }
-  
+
   .social-button span {
-    width: 12em;
-    height: 2.5em;
+    /* !!! УБИРАЕМ ПОЛЯ СВЕРХУ И СНИЗУ !!! */
+    height: 110%; /* Черный блок занимает 100% высоты белого */
+    width: 110%;
+
+    /* Скругление делаем таким же, как у родителя */
+    border-radius: 50px; 
+    
     font-size: 16px;
-  }
-  
-  .social-button .container a {
-    width: 36px;
-    height: 36px;
-  }
-  
-  .social-button .container img {
-    width: 18px;
-    height: 18px;
-  }
-}
-
-/* Мобильные устройства */
-@media (max-width: 768px) {
-  .social-button {
-    width: 14em;
-    height: 3em;
-  }
-  
-  .social-button span {
-    width: 10em;
-    height: 2.2em;
-    font-size: 14px;
     letter-spacing: 2px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
-  
-  .social-button .container {
-    gap: 8px;
-  }
-  
-  .social-button .container a {
-    width: 32px;
-    height: 32px;
-    min-width: 32px; /* Минимальный размер для тач */
-  }
-  
-  .social-button .container img {
-    width: 16px;
-    height: 16px;
-  }
-}
 
-/* Маленькие мобильные */
-@media (max-width: 480px) {
-  .social-button {
-    width: 12em;
-    height: 2.8em;
-  }
-  
-  .social-button span {
-    width: 8.5em;
-    height: 2em;
-    font-size: 12px;
-    letter-spacing: 1px;
-  }
-  
+  /* Этот код не трогаем, он для иконок при наведении */
   .social-button .container {
-    gap: 6px;
+    gap: 10px;
   }
-  
+
   .social-button .container a {
-    width: 28px;
-    height: 28px;
-    min-width: 28px;
+    width: 40px;
+    height: 40px;
   }
-  
+
   .social-button .container img {
-    width: 14px;
-    height: 14px;
+    width: 20px;
+    height: 20px;
   }
 }
