@@ -172,13 +172,23 @@ body {
 /* ================= MOBILE OPTIMIZATION ================= */
 /* Общие стили для всех мобильных устройств */
 @media (max-width: 767px) {
+  /* Add vertical rhythm between direct children inside the main app container */
+  .app > * + * {
+    margin-top: 0.5rem;
+  }
+
+  /* Tighter section internals to mirror desktop density */
+  .title-container { margin-bottom: 0.5rem; }
+  .links-container { margin-bottom: 0.75rem; gap: 0.75rem; }
+  .fuzzy-text-container { margin: 0.75rem 0; }
+  .divider { margin: 0.5rem 0; height: 0.75rem; }
   :root {
     --gap-icons-to-divider: 20px;
     --gap-divider-to-next-title: 30px;
   }
 
   .section {
-    min-height: 100vh;
+    min-height: auto; /* was 100vh; avoid forced tall sections on mobile */
     padding: 0.5rem;
   }
 
