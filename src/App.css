@@ -274,9 +274,17 @@ body {
 @media (max-width: 428px) {
   .title-name,
   .title-lastname {
-    font-size: 4rem !important; /* Обновлено по рекомендации Грока */
-    line-height: 1.1; /* Обновлено по рекомендации Грока */
-    margin: 1rem 0; /* Обновлено по рекомендации Грока */
+    font-size: clamp(0.9rem, 5.5vw, 2.2rem) !important;
+    line-height: 0.85 !important;
+    margin: 0.5rem 0 !important;
+    max-width: 95vw;
+    overflow-wrap: break-word;
+    word-break: break-word;
+  }
+
+  .title-container {
+    margin-bottom: 0.5rem;
+    padding: 0 0.5rem;
   }
 
   .subtitle {
