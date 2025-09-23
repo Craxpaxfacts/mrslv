@@ -33,87 +33,37 @@
   /* Разрешаем события курсора, но Swiper может накладывать слои — поднимем z-index содержимого */
 }
 
-/* Mobile: force perfect centering */
-@media (max-width: 1024px) {
+/* ===== МОБИЛЬНАЯ АДАПТАЦИЯ (ЕДИНЫЙ БЛОК) ===== */
+@media (max-width: 767px) {
+  /* Контейнер и viewport */
+  .project-carousel-container { padding: 20px 0; }
+  .carousel-viewport { width: 95vw; margin: 0 auto; }
+
+  /* Свойства свайпера */
+  .swiper { padding-top: 30px; padding-bottom: 30px; }
+
+  /* Слайд: на мобилке показываем только активный, жёсткое центрирование */
   .swiper-slide {
+    width: clamp(180px, 40vw, 280px);
+    height: clamp(180px, 40vw, 280px);
+    display: none; /* показываем только центральный слайд */
     justify-content: center !important;
     align-items: center !important;
     text-align: center;
     padding: 0 !important;
   }
-  
-  .normal-card-wrapper {
-    display: block;
-    margin-left: auto;
-    margin-right: auto;
-  }
-}
-
-/* ===== МОБИЛЬНАЯ АДАПТАЦИЯ КАРУСЕЛИ ===== */
-
-/* Планшеты */
-@media (max-width: 1024px) {
-  .carousel-viewport {
-    width: clamp(300px, 85vw, 800px);
-  }
-  
-  .swiper-slide {
-    width: clamp(220px, 30vw, 300px);
-    height: clamp(220px, 30vw, 300px);
-  }
-}
-
-/* Мобильные устройства */
-@media (max-width: 768px) {
-  .project-carousel-container {
-    padding: 30px 0;
-  }
-  
-  .carousel-viewport {
-    width: clamp(280px, 90vw, 600px);
-  }
-  
-  .swiper {
-    padding-top: 30px;
-    padding-bottom: 30px;
-  }
-  
-  .swiper-slide {
-    width: clamp(200px, 35vw, 280px);
-    height: clamp(200px, 35vw, 280px);
-    display: none; /* показываем только центральный слайд */
-  }
   .swiper-slide.swiper-slide-active { display: flex; }
-  /* Если активный слайд — дубликат (loop), тоже показываем его */
   .swiper-slide-duplicate.swiper-slide-active { display: flex !important; }
-  
-  .normal-card {
-    border-radius: 12px;
-  }
+
+  /* Обёртка карточки по центру */
+  .normal-card-wrapper { display: block; margin-left: auto; margin-right: auto; }
+
+  /* Немного скругляем карточку на мобилке */
+  .normal-card { border-radius: 12px; }
 
   /* Прячем стрелки на мобильных */
   .swiper-button-next,
   .swiper-button-prev { display: none !important; }
-}
-
-/* Маленькие мобильные */
-@media (max-width: 480px) {
-  .project-carousel-container {
-    padding: 20px 0;
-  }
-  
-  .carousel-viewport {
-    width: 95vw;
-  }
-  
-  .swiper-slide {
-    width: clamp(180px, 40vw, 250px);
-    height: clamp(180px, 40vw, 250px);
-  }
-  
-  .normal-card {
-    border-radius: 8px;
-  }
 }
 
 /* Скрыть клоны, которые Swiper добавляет для loop */
