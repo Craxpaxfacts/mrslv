@@ -2,12 +2,11 @@
 
 .project-carousel-container {
   width: 100%;
-  padding: 50px 0;
   position: relative; /* Добавляем для позиционирования стрелок */
 }
 
 .carousel-viewport {
-  width: clamp(340px, 90vw, 900px); /* адаптивная ширина окна */
+  max-width: 100%;
   margin: 0 auto;
   overflow: hidden; /* прячем всё за пределами прямоугольника */
 }
@@ -32,6 +31,22 @@
   justify-content: center;
   align-items: center;
   /* Разрешаем события курсора, но Swiper может накладывать слои — поднимем z-index содержимого */
+}
+
+/* Mobile: force perfect centering */
+@media (max-width: 1024px) {
+  .swiper-slide {
+    justify-content: center !important;
+    align-items: center !important;
+    text-align: center;
+    padding: 0 !important;
+  }
+  
+  .normal-card-wrapper {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+  }
 }
 
 /* ===== МОБИЛЬНАЯ АДАПТАЦИЯ КАРУСЕЛИ ===== */

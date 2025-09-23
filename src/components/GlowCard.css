@@ -12,4 +12,21 @@
   pointer-events: auto; /* карточка сама ловит hover/pointer */
 }
 
+/* Mobile centering fix */
+@media (max-width: 1024px) {
+  .glow-card {
+    margin: 0 auto;
+    left: auto !important;
+    right: auto !important;
+    transform: translateX(0) !important;
+  }
+  
+  /* Ensure parent containers also center properly */
+  .normal-card-wrapper {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+  }
+}
+
 
