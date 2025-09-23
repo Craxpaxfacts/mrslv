@@ -14,7 +14,7 @@ import { SocialTooltip } from './components/SocialTooltip.jsx';
 import NavigationBar from './components/NavigationBar.jsx';
 
 
-gsap.registerPlugin(ScrollTrigger, useGSAP);
+gsap.registerPlugin(ScrollTrigger);
 
 
 function App() {
@@ -22,23 +22,22 @@ function App() {
 
   useGSAP(() => {
     sectionsRef.current.forEach((section) => {
-      if (section) {
-        gsap.fromTo(
-          section,
-          { opacity: 0 },
-          {
-            opacity: 1,
-            duration: 0.7,
-            ease: 'power2.out',
-            scrollTrigger: {
-              trigger: section,
-              start: 'top 80%',
-              toggleActions: 'play none none none',
-            },
-          }
-        );
-      }
+      if (!section) return;
+      gsap.from(section, {
+        opacity: 0,
+        y: 16,
+        duration: 0.7,
+        ease: 'power2.out',
+        immediateRender: false,
+        scrollTrigger: {
+          trigger: section,
+          start: 'top 85%',
+          toggleActions: 'play none none none',
+          once: true,
+        },
+      });
     });
+    try { ScrollTrigger.refresh(); } catch {}
   }, { dependencies: [projects] });
 
   return (

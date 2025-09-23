@@ -48,8 +48,12 @@ const ProjectCarousel = ({ tracks, projectId }) => {
   // Проверка на мобильное устройство
   React.useEffect(() => {
     const checkMobile = () => {
-      const isCoarsePointer = typeof window !== 'undefined' && window.matchMedia ? window.matchMedia('(pointer: coarse)').matches : false;
-      setIsMobile(isCoarsePointer || window.innerWidth <= 820);
+      try {
+        const coarse = window.matchMedia && window.matchMedia('(pointer: coarse)').matches;
+        setIsMobile(Boolean(coarse) || window.innerWidth <= 820);
+      } catch {
+        setIsMobile(window.innerWidth <= 820);
+      }
     };
 
     checkMobile();
@@ -76,6 +80,15 @@ const ProjectCarousel = ({ tracks, projectId }) => {
         centeredSlides={true}
         slidesPerView={'auto'}
         loop={isLoopEnabled}
+        watchOverflow={true}
+        onBeforeInit={(swiper) => {
+          // Safety: disable loop at runtime if slides are not enough
+          try {
+            if (!Array.isArray(tracks) || tracks.length <= 3) {
+              swiper.params.loop = false;
+            }
+          } catch {}
+        }}
         initialSlide={1}
         noSwipingSelector={'.swiper-no-swiping'}
         coverflowEffect={{ rotate: 35, stretch: 0, depth: 100, modifier: 1, slideShadows: false }}

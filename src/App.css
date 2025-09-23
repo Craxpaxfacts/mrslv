@@ -39,9 +39,7 @@ body {
   padding: 0 0.5rem;
 }
 
-.app > div:first-child .section {
-  padding-top: 1rem;
-}
+.app > div:first-child .section { padding-top: 1rem; }
 
 /* Cognesthetic секция */
 .section.cognesthetic {
