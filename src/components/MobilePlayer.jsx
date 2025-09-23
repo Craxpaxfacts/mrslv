@@ -164,7 +164,6 @@ const MobilePlayer = ({ tracks, projectId }) => {
         </div>
 
         <div className="volume-section">
-          <VolumeIcon />
           <Slider
             className="volume-slider"
             min={0}
