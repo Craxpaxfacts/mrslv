@@ -48,9 +48,10 @@ const ProjectCarousel = ({ tracks, projectId }) => {
   // Проверка на мобильное устройство
   React.useEffect(() => {
     const checkMobile = () => {
-      setIsMobile(window.innerWidth <= 767);
+      const isCoarsePointer = typeof window !== 'undefined' && window.matchMedia ? window.matchMedia('(pointer: coarse)').matches : false;
+      setIsMobile(isCoarsePointer || window.innerWidth <= 820);
     };
-    
+
     checkMobile();
     window.addEventListener('resize', checkMobile);
     return () => window.removeEventListener('resize', checkMobile);

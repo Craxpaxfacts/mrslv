@@ -14,7 +14,7 @@ import { SocialTooltip } from './components/SocialTooltip.jsx';
 import NavigationBar from './components/NavigationBar.jsx';
 
 
-gsap.registerPlugin(ScrollTrigger);
+gsap.registerPlugin(ScrollTrigger, useGSAP);
 
 
 function App() {

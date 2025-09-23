@@ -78,7 +78,7 @@ body {
 
 .subtitle {
   font-family: 'Monsieur La Doulaise', cursive;
-  font-size: clamp(1.2rem, 3.5vw, 2rem);
+  font-size: clamp(1.6rem, 3.5vw, 2rem);
   font-weight: 400;
   color: #a686ff;
   margin: 1rem 0;
@@ -334,7 +334,8 @@ body {
   }
 
   .subtitle {
-    font-size: clamp(1.5rem, 3.5vw, 2rem);
+    font-size: clamp(1.5rem, 7vw, 2.7rem);
+    margin: 1.2rem 0;
   }
 
   .divider {
@@ -369,11 +370,12 @@ body {
 
   .title-name,
   .title-lastname {
-    font-size: clamp(2.5rem, 8vw, 6rem);
+    font-size: clamp(2rem, 6vw, 4rem);
   }
 
   .subtitle {
-    font-size: clamp(1.8rem, 4vw, 2.5rem);
+    font-size: clamp(1.8rem, 4vw, 2.4rem);
+    margin: 0.9rem 0;
   }
 
   .description {
