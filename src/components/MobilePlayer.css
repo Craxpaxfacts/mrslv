@@ -60,10 +60,10 @@
   width: var(--album-size);
   height: var(--album-size);
   aspect-ratio: 1;
-  padding: 4px;
+  padding: 0; /* give full area to inner card */
   border-radius: 16px;
   background: transparent;
-  border: 1px solid rgba(255,255,255,0.08);
+  border: none; /* border handled by inner GlareHover */
   box-shadow: 0 8px 24px rgba(0,0,0,0.45);
 }
 

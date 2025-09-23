@@ -4,6 +4,7 @@ import { useAudioPlayer } from '../hooks/useAudioPlayer';
 import { setVolume01, getVolume01 } from '../lib/audioController';
 import Slider from './ui/Slider';
 import './MobilePlayer.css';
+import GlareHover from './GlareHover';
 
 // Иконки в стиле Яндекс.Музыки
 const PlayIcon = () => (
@@ -122,10 +123,24 @@ const MobilePlayer = ({ tracks, projectId }) => {
             onTouchMove={onTouchMove}
             onTouchEnd={onTouchEnd}
           >
-            <div className="album-card">
+            <GlareHover
+              width="var(--album-size)"
+              height="var(--album-size)"
+              background="transparent"
+              borderRadius="12px"
+              borderColor="rgba(255,255,255,0.08)"
+              glareColor="#ffffff"
+              glareOpacity={0.25}
+              glareAngle={-35}
+              glareSize={180}
+              transitionDuration={700}
+              playOnce={true}
+              className="album-card"
+              style={{ boxShadow: '0 8px 24px rgba(0,0,0,0.45)' }}
+            >
               <img src={tracks[activeIndex]?.cover} alt={tracks[activeIndex]?.title || 'Album Cover'} />
               <div className="album-glow" />
-            </div>
+            </GlareHover>
           </div>
         </div>
 
