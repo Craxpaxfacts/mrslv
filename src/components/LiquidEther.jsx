@@ -34,6 +34,22 @@ export default function LiquidEther({
   useEffect(() => {
     if (!mountRef.current) return;
 
+    const isMobile = typeof window !== 'undefined' && window.matchMedia && window.matchMedia('(max-width: 767px)').matches;
+
+    function dimHex(hex, factor = 0.75) {
+      try {
+        const c = new THREE.Color(hex);
+        c.multiplyScalar(Math.max(0, Math.min(1, factor)));
+        return `#${c.getHexString()}`;
+      } catch (e) {
+        return hex;
+      }
+    }
+    function dimColors(arr, factor = 0.75) {
+      if (!Array.isArray(arr)) return arr;
+      return arr.map(h => dimHex(h, factor));
+    }
+
     function makePaletteTexture(stops) {
       let arr;
       if (Array.isArray(stops) && stops.length > 0) {
@@ -64,7 +80,7 @@ export default function LiquidEther({
       return tex;
     }
 
-    const paletteTex = makePaletteTexture(colors);
+    const paletteTex = makePaletteTexture(isMobile ? dimColors(colors, 0.7) : colors);
     const bgVec4 = new THREE.Vector4(0, 0, 0, 0); // always transparent
 
     class CommonClass {
@@ -389,12 +405,20 @@ export default function LiquidEther({
     uniform sampler2D velocity;
     uniform sampler2D palette;
     uniform vec4 bgColor;
+    uniform float time;
+    uniform float ditherAmount;
     varying vec2 uv;
     void main(){
     vec2 vel = texture2D(velocity, uv).xy;
     float lenv = clamp(length(vel), 0.0, 1.0);
+    // Gentle smoothing to reduce banding
+    lenv = smoothstep(0.0, 1.0, lenv);
     vec3 c = texture2D(palette, vec2(lenv, 0.5)).rgb;
     vec3 outRGB = mix(bgColor.rgb, c, lenv);
+    // Blue-noise style dithering to break up quantization lines
+    float n = fract(sin(dot(gl_FragCoord.xy + vec2(time * 60.0), vec2(12.9898, 78.233))) * 43758.5453);
+    outRGB += (n - 0.5) * ditherAmount;
+    outRGB = clamp(outRGB, 0.0, 1.0);
     float outA = mix(bgColor.a, 1.0, lenv);
     gl_FragColor = vec4(outRGB, outA);
 }
@@ -889,7 +913,9 @@ export default function LiquidEther({
               velocity: { value: this.simulation.fbos.vel_0.texture },
               boundarySpace: { value: new THREE.Vector2() },
               palette: { value: paletteTex },
-              bgColor: { value: bgVec4 }
+            bgColor: { value: bgVec4 },
+            time: { value: 0.0 },
+            ditherAmount: { value: (typeof window !== 'undefined' && window.matchMedia && window.matchMedia('(max-width: 767px)').matches) ? 1.5/255.0 : 1.0/255.0 }
             }
           })
         );
@@ -907,6 +933,9 @@ export default function LiquidEther({
       }
       update() {
         this.simulation.update();
+        if (this.output && this.output.material && this.output.material.uniforms && this.output.material.uniforms.time) {
+          this.output.material.uniforms.time.value = Common.time;
+        }
         this.render();
       }
     }
@@ -1009,7 +1038,7 @@ export default function LiquidEther({
       $wrapper: container,
       autoDemo,
       autoSpeed,
-      autoIntensity,
+      autoIntensity: isMobile ? autoIntensity * 0.6 : autoIntensity,
       takeoverDuration,
       autoResumeDelay,
       autoRampDuration
@@ -1022,7 +1051,7 @@ export default function LiquidEther({
       if (!sim) return;
       const prevRes = sim.options.resolution;
       Object.assign(sim.options, {
-        mouse_force: mouseForce,
+        mouse_force: isMobile ? mouseForce * 0.65 : mouseForce,
         cursor_size: cursorSize,
         isViscous,
         viscous,
@@ -1030,7 +1059,7 @@ export default function LiquidEther({
         iterations_poisson: iterationsPoisson,
         dt,
         BFECC,
-        resolution,
+        resolution: isMobile ? Math.min(0.5, Math.max(0.35, (typeof resolution === 'number' ? resolution : 0.5) * 0.9)) : resolution,
         isBounce
       });
       if (resolution !== prevRes) {

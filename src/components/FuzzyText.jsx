@@ -54,7 +54,9 @@ const FuzzyText = ({
       const offCtx = offscreen.getContext('2d');
       if (!offCtx) return;
 
-      offCtx.font = `${fontWeight} ${fontSizeStr} ${computedFontFamily}`;
+      // Important: Safari/iOS CanvasRenderingContext2D.font does NOT support clamp().
+      // Use computed numeric size in pixels to avoid falling back to 10px.
+      offCtx.font = `${fontWeight} ${numericFontSize}px ${computedFontFamily}`;
       offCtx.textBaseline = 'alphabetic';
       const metrics = offCtx.measureText(text);
 
@@ -70,7 +72,7 @@ const FuzzyText = ({
       offscreen.width = textBoundingWidth + extraWidthBuffer;
       offscreen.height = tightHeight;
 
-      offCtx.font = `${fontWeight} ${fontSizeStr} ${computedFontFamily}`;
+      offCtx.font = `${fontWeight} ${numericFontSize}px ${computedFontFamily}`;
       offCtx.textBaseline = 'alphabetic';
       offCtx.fillStyle = color;
       offCtx.fillText(text, extraWidthBuffer / 2 - actualLeft, actualAscent);
