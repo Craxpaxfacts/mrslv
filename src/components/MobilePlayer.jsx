@@ -1,5 +1,6 @@
 // src/components/MobilePlayer.jsx
 import React, { useState, useRef, useEffect } from 'react';
+import { motion, useMotionValue, useTransform, animate } from 'framer-motion';
 import { useAudioPlayer } from '../hooks/useAudioPlayer';
 import { setVolume01, getVolume01 } from '../lib/audioController';
 import Slider from './ui/Slider';
@@ -42,7 +43,13 @@ const MobilePlayer = ({ tracks, projectId }) => {
   const [volume, setVolume] = useState(getVolume01() * 100);
   const [progress, setProgress] = useState(0);
   const touchStartXRef = useRef(0);
-  const touchEndXRef = useRef(0);
+  const x = useMotionValue(0);
+  const scale = useTransform(x, [-120, 0, 120], [0.96, 1, 0.96]);
+  const shadow = useTransform(x, [-120, 0, 120], [
+    '0 12px 28px rgba(0,0,0,0.55)',
+    '0 8px 24px rgba(0,0,0,0.45)',
+    '0 12px 28px rgba(0,0,0,0.55)'
+  ]);
   const { isPlaying, currentIndex, playAt, currentTime, duration } = useAudioPlayer(`mobile-${projectId}`);
 
   useEffect(() => {
@@ -82,21 +89,37 @@ const MobilePlayer = ({ tracks, projectId }) => {
   // Touch-swipe navigation
   const onTouchStart = (e) => {
     touchStartXRef.current = e.changedTouches[0].clientX;
-    touchEndXRef.current = e.changedTouches[0].clientX;
+    x.set(0);
   };
 
   const onTouchMove = (e) => {
-    touchEndXRef.current = e.changedTouches[0].clientX;
+    const dx = e.changedTouches[0].clientX - touchStartXRef.current;
+    x.set(Math.max(-140, Math.min(140, dx)));
   };
 
   const onTouchEnd = () => {
-    const deltaX = touchEndXRef.current - touchStartXRef.current;
-    if (Math.abs(deltaX) > 40) {
-      if (deltaX < 0) {
-        nextTrack();
-      } else {
-        prevTrack();
-      }
+    const current = x.get();
+    const threshold = 80;
+    const slideTo = (dir) => {
+      const outX = dir === 'next' ? -320 : 320;
+      const inStart = dir === 'next' ? 320 : -320;
+      animate(x, outX, { duration: 0.18, ease: 'easeOut' }).finished.then(() => {
+        if (dir === 'next') {
+          setActiveIndex((i) => (i + 1) % tracks.length);
+        } else {
+          setActiveIndex((i) => (i === 0 ? tracks.length - 1 : i - 1));
+        }
+        x.set(inStart);
+        animate(x, 0, { type: 'spring', stiffness: 420, damping: 40 });
+      });
+    };
+
+    if (current <= -threshold) {
+      slideTo('next');
+    } else if (current >= threshold) {
+      slideTo('prev');
+    } else {
+      animate(x, 0, { type: 'spring', stiffness: 420, damping: 38 });
     }
   };
 
@@ -130,16 +153,20 @@ const MobilePlayer = ({ tracks, projectId }) => {
               borderRadius="12px"
               borderColor="rgba(255,255,255,0.08)"
               glareColor="#ffffff"
-              glareOpacity={0.25}
+              glareOpacity={0.22}
               glareAngle={-35}
               glareSize={180}
-              transitionDuration={700}
-              playOnce={true}
+              transitionDuration={1100}
+              playOnce={false}
+              autoPlay={true}
+              autoPlayInterval={6500}
               className="album-card"
               style={{ boxShadow: '0 8px 24px rgba(0,0,0,0.45)' }}
             >
-              <img src={tracks[activeIndex]?.cover} alt={tracks[activeIndex]?.title || 'Album Cover'} />
-              <div className="album-glow" />
+              <motion.div className="album-card-motion" style={{ x, scale, boxShadow: shadow }}>
+                <img src={tracks[activeIndex]?.cover} alt={tracks[activeIndex]?.title || 'Album Cover'} />
+                <div className="album-glow" />
+              </motion.div>
             </GlareHover>
           </div>
         </div>

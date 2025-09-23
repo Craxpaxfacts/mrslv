@@ -1,4 +1,5 @@
 import './GlareHover.css';
+import React from 'react';
 
 const GlareHover = ({
   width = '500px',
@@ -11,8 +12,10 @@ const GlareHover = ({
   glareOpacity = 0.5,
   glareAngle = -45,
   glareSize = 250,
-  transitionDuration = 650,
+  transitionDuration = 1100,
   playOnce = false,
+  autoPlay = true,
+  autoPlayInterval = 7000,
   className = '',
   style = {}
 }) => {
@@ -42,10 +45,41 @@ const GlareHover = ({
     '--gh-border': borderColor
   };
 
+  const ref = React.useRef(null);
+  const timeoutRef = React.useRef(null);
+
+  const runOnce = React.useCallback(() => {
+    if (!ref.current) return;
+    ref.current.classList.add('glare-hover--run');
+    if (timeoutRef.current) clearTimeout(timeoutRef.current);
+    timeoutRef.current = setTimeout(() => {
+      if (!ref.current) return;
+      ref.current.classList.remove('glare-hover--run');
+    }, transitionDuration + 50);
+  }, [transitionDuration]);
+
+  React.useEffect(() => {
+    if (playOnce) return;
+    if (!autoPlay) return;
+    if (typeof window !== 'undefined' && window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      return; // respect reduced motion
+    }
+    const el = ref.current;
+    if (!el) return;
+    let timer;
+    runOnce();
+    timer = setInterval(runOnce, Math.max(transitionDuration + 800, autoPlayInterval));
+    return () => { if (timer) clearInterval(timer); };
+  }, [autoPlay, autoPlayInterval, playOnce, transitionDuration]);
+
   return (
     <div
+      ref={ref}
       className={`glare-hover ${playOnce ? 'glare-hover--play-once' : ''} ${className}`}
       style={{ ...vars, ...style }}
+      onPointerDown={runOnce}
+      onTouchStart={runOnce}
+      onClick={runOnce}
     >
       {children}
     </div>

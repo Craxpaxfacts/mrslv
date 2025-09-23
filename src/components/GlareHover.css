@@ -42,6 +42,16 @@
     0 0;
 }
 
+/* programmatic autoplay */
+@keyframes gh-sweep {
+  0% { background-position: -100% -100%, 0 0; }
+  100% { background-position: 100% 100%, 0 0; }
+}
+
+.glare-hover--run::before {
+  animation: gh-sweep var(--gh-duration) ease 1;
+}
+
 .glare-hover--play-once::before {
   transition: none;
 }

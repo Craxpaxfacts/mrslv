@@ -65,6 +65,7 @@
   background: transparent;
   border: none; /* border handled by inner GlareHover */
   box-shadow: 0 8px 24px rgba(0,0,0,0.45);
+  overflow: hidden; /* hide sliding overflow for smooth swipe */
 }
 
 .album-swiper::after { content: none; }
@@ -80,6 +81,12 @@
   box-shadow: 
     0 4px 16px rgba(0, 0, 0, 0.6),
     0 0 0 1px rgba(255, 255, 255, 0.05);
+}
+
+.album-card-motion {
+  width: 100%;
+  height: 100%;
+  display: flex;
 }
 
 .album-card img {
