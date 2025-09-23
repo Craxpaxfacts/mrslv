@@ -1,0 +1,254 @@
+/* src/components/MobilePlayer.css - Тёмный стиль в духе Яндекс.Музыки */
+
+.mobile-player {
+  position: relative;
+  width: auto;
+  --album-size: 320px;
+  max-width: calc(var(--album-size) + 12px);
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  background: transparent;
+  color: #ffffff;
+  overflow: hidden;
+  border-radius: 12px;
+}
+
+/* Неоновый градиентный бордер */
+.mobile-player::before {
+  content: none;
+}
+
+/* Размытый фон из обложки */
+.mobile-player-background {
+  display: none !important;
+}
+
+.background-blur {
+  width: 100%;
+  height: 100%;
+  background-size: cover;
+  background-position: center;
+  filter: blur(60px) brightness(0.3);
+  transform: scale(1.1);
+  transition: background-image 0.8s ease;
+}
+
+/* Основной контент */
+.mobile-player-content {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 10px 8px 12px;
+  background: transparent;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  border: none;
+}
+
+/* Контейнер с обложками */
+.album-art-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 8px 0 12px;
+  padding: 0 4px;
+}
+
+.album-swiper {
+  width: var(--album-size);
+  height: var(--album-size);
+  aspect-ratio: 1;
+  padding: 4px;
+  border-radius: 16px;
+  background: transparent;
+  border: 1px solid rgba(255,255,255,0.08);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.45);
+}
+
+.album-swiper::after { content: none; }
+
+.album-card {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  border-radius: 12px;
+  overflow: hidden;
+  background: transparent;
+  box-shadow: 
+    0 4px 16px rgba(0, 0, 0, 0.6),
+    0 0 0 1px rgba(255, 255, 255, 0.05);
+}
+
+.album-card img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  transition: transform 0.3s ease;
+}
+
+.album-glow {
+  position: absolute;
+  inset: -2px;
+  border-radius: 18px;
+  background: linear-gradient(135deg, 
+    rgba(255, 255, 255, 0.1) 0%,
+    transparent 50%,
+    rgba(255, 255, 255, 0.05) 100%
+  );
+  z-index: -1;
+}
+
+/* Блок с заголовком и прогрессом удалён */
+
+/* Контролы */
+.controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  margin-bottom: 14px;
+}
+
+.control-btn {
+  background: none;
+  border: none;
+  color: #ffffff;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  border-radius: 50%;
+  padding: 8px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.35);
+}
+
+.control-btn:hover {
+  color: #b396ff;
+  transform: scale(1.05);
+}
+
+.control-btn:active {
+  transform: scale(0.95);
+}
+
+.play-btn {
+  background: linear-gradient(135deg, #b396ff 0%, #a686ff 100%);
+  color: #000000;
+  width: 44px;
+  height: 44px;
+  box-shadow: 
+    0 6px 16px rgba(179, 150, 255, 0.35),
+    0 3px 8px rgba(0, 0, 0, 0.25);
+}
+
+.play-btn:hover {
+  color: #000000;
+  transform: scale(1.05);
+  box-shadow: 
+    0 6px 16px rgba(179, 150, 255, 0.4),
+    0 3px 8px rgba(0, 0, 0, 0.3);
+}
+
+.prev-btn, .next-btn {
+  width: 32px;
+  height: 32px;
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(10px);
+}
+
+.control-btn svg { width: 16px; height: 16px; }
+.play-btn svg { width: 18px; height: 18px; }
+
+.prev-btn:hover, .next-btn:hover {
+  background: rgba(179, 150, 255, 0.2);
+}
+
+/* Громкость */
+.volume-section {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 0 8px;
+}
+
+.volume-section svg {
+  color: #b3b3b3;
+  flex-shrink: 0;
+}
+
+.volume-container {
+  position: relative;
+  flex: 1;
+  height: 2px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.volume-slider {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: transparent;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  -webkit-appearance: none;
+  appearance: none;
+  z-index: 2;
+}
+
+.volume-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #b396ff;
+  cursor: pointer;
+  box-shadow: 0 1px 2px rgba(179, 150, 255, 0.4);
+}
+
+.volume-fill {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  background: linear-gradient(90deg, #b396ff 0%, #a686ff 100%);
+  border-radius: 2px;
+  transition: width 0.1s ease;
+}
+
+.volume-value {
+  font-size: 10px;
+  color: #b3b3b3;
+  font-weight: 500;
+  min-width: 20px;
+  text-align: right;
+}
+
+/* Адаптивность */
+@media (max-width: 480px) {
+  .mobile-player {
+    max-width: calc(var(--album-size) + 12px);
+  }
+  .album-swiper {
+    width: var(--album-size);
+    height: var(--album-size);
+  }
+}
+
+@media (max-width: 360px) {
+  .mobile-player {
+    max-width: calc(var(--album-size) + 12px);
+  }
+  .album-swiper {
+    width: var(--album-size);
+    height: var(--album-size);
+  }
+}

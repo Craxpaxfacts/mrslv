@@ -24,7 +24,9 @@
   to { transform: translateX(-50%); }
 }
 
-/* Убираем паузу при hover — лента всегда движется */
+/* Останавливаем ленту при наведение/тапе */
+.streamer-loop-container:hover .streamer-track { animation-play-state: paused; }
+.streamer-loop-container:active .streamer-track { animation-play-state: paused; }
 
 .streamer-item {
   display: flex;
@@ -74,9 +76,9 @@
   .streamer-loop-container { width: clamp(180px, 40vw, 250px); }
 }
 
-/* Убираем паузу по hover на тач-устройствах, чтобы не залипала анимация */
+/* На тач-устройствах пауза по активному касанию */
 @media (hover: none) and (pointer: coarse) {
-  .streamer-loop-container:hover .streamer-track { animation-play-state: running; }
+  .streamer-loop-container:active .streamer-track { animation-play-state: paused; }
 }
 
 /* Перекрываем глобальное отключение анимаций на очень маленьких экранах */

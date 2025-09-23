@@ -7,6 +7,7 @@ import { Navigation, Pagination, EffectCoverflow } from 'swiper/modules';
 import { useAudioPlayer } from '../hooks/useAudioPlayer';
 import GlowCard from './GlowCard';
 import ElasticSlider from './ElasticSlider';
+import MobilePlayer from './MobilePlayer';
 import { setVolume01, getVolume01 } from '../lib/audioController';
 
 import 'swiper/css';
@@ -40,11 +41,28 @@ const PauseIcon = () => <svg width="60" height="60" viewBox="0 0 24 24" fill="wh
 
 const ProjectCarousel = ({ tracks, projectId }) => {
   const [activeIndex, setActiveIndex] = useState(0);
+  const [isMobile, setIsMobile] = useState(false);
   const swiperRef = useRef(null);
   const { isPlaying, currentIndex, playAt } = useAudioPlayer(`carousel-${projectId}`);
 
+  // Проверка на мобильное устройство
+  React.useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth <= 767);
+    };
+    
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
   // --- 👇 УМНАЯ ЛОГИКА ДЛЯ LOOP 👇 ---
   const isLoopEnabled = tracks.length > 3;
+
+  // На мобильных показываем новый плеер
+  if (isMobile) {
+    return <MobilePlayer tracks={tracks} projectId={projectId} />;
+  }
 
   return (
     <div className="project-carousel-container">
