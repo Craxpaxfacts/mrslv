@@ -30,7 +30,7 @@ export const projects = [
     className: 'mrslv',
     firstName: 'MRSLV',
     lastName: '',
-    subtitle: 'From each according to the movement, to all according to the common vibe.',
+    subtitle: '\nFrom each according to the movement \nto all according to the common vibe',
     description:
       'Pulsating techno rhythms, deep textures, and modern sound design create an immersive experience. The music is built on drive, dynamic energy, and a hypnotic atmosphere.',
     tracks: [

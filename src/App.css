@@ -80,6 +80,7 @@ body {
   margin: 1rem 0;
   text-shadow: 0 0 0.6px rgba(166, 134, 255, 0.55);
   line-height: 1.2;
+  white-space: pre-line;
 }
 
 .description {
