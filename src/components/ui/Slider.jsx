@@ -2,12 +2,47 @@ import NumberFlow from '@number-flow/react';
 import * as RadixSlider from '@radix-ui/react-slider';
 import clsx from 'clsx';
 
+import React from 'react';
+
 function Slider({ value, className, ...props }) {
+  const [showValue, setShowValue] = React.useState(false);
+  const hideTimerRef = React.useRef(null);
+
+  const handleValueChange = (vals) => {
+    props.onValueChange?.(vals);
+    setShowValue(true);
+    if (hideTimerRef.current) clearTimeout(hideTimerRef.current);
+    hideTimerRef.current = setTimeout(() => setShowValue(false), 900);
+  };
+
+  const handleValueCommit = (vals) => {
+    props.onValueCommit?.(vals);
+    if (hideTimerRef.current) clearTimeout(hideTimerRef.current);
+    hideTimerRef.current = setTimeout(() => setShowValue(false), 700);
+  };
+
+  React.useEffect(() => () => { if (hideTimerRef.current) clearTimeout(hideTimerRef.current); }, []);
+
   return (
     <RadixSlider.Root
       {...props}
       value={value}
       className={clsx('mobile-slider-root', className)}
+      onValueChange={handleValueChange}
+      onValueCommit={handleValueCommit}
+      onPointerDown={() => setShowValue(true)}
+      onPointerUp={() => {
+        if (hideTimerRef.current) clearTimeout(hideTimerRef.current);
+        hideTimerRef.current = setTimeout(() => setShowValue(false), 700);
+      }}
+      onTouchEnd={() => {
+        if (hideTimerRef.current) clearTimeout(hideTimerRef.current);
+        hideTimerRef.current = setTimeout(() => setShowValue(false), 700);
+      }}
+      onBlur={() => {
+        if (hideTimerRef.current) clearTimeout(hideTimerRef.current);
+        hideTimerRef.current = setTimeout(() => setShowValue(false), 500);
+      }}
     >
       <RadixSlider.Track className="mobile-slider-track">
         <RadixSlider.Range className="mobile-slider-range" />
@@ -16,7 +51,7 @@ function Slider({ value, className, ...props }) {
         className="mobile-slider-thumb"
         aria-label="Volume"
       >
-        {value?.[0] != null && (
+        {showValue && value?.[0] != null && (
           <NumberFlow
             willChange
             value={value[0]}
