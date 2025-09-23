@@ -61,7 +61,7 @@ body {
 .title-lastname {
   font-family: 'Cinzel Decorative', serif;
   font-weight: 700;
-  font-size: clamp(1.2rem, 5vw, 3rem);
+  font-size: clamp(2.5rem, 12vw, 5rem); /* Обновлено по рекомендации Грока */
   color: #fff;
   letter-spacing: 0.05em;
   text-transform: uppercase;
@@ -69,6 +69,7 @@ body {
   word-break: break-word;
   hyphens: auto;
   max-width: 100%;
+  will-change: transform; /* Добавлено для плавности глитч-эффекта */
 }
 
 .title-lastname {
@@ -119,6 +120,9 @@ body {
   margin-bottom: 3rem; /* Увеличил отступ снизу чтобы не наезжали на кнопку */
   position: relative;
   z-index: 5;
+  display: flex; /* Добавлено для flexbox */
+  justify-content: space-around; /* Обновлено по рекомендации Грока */
+  gap: 1.5rem; /* Обновлено по рекомендации Грока */
 }
 
 .streaming-link {
@@ -154,11 +158,6 @@ body {
 /* === Вращающийся заголовок / canvas === */
 .cognesthetic-circular-title {
   margin-bottom: 2rem;
-}
-
-.liquid-ether-container,
-.liquid-ether-container canvas {
-  pointer-events: none !important;
 }
 
 /* === ShareButton (кнопка FOLLOW) === */
@@ -308,6 +307,14 @@ body {
 
   .links-container {
     margin-bottom: 2rem; /* Уменьшил для мобильных */
+    flex-direction: column; /* Обновлено по рекомендации Грока */
+    align-items: center; /* Обновлено по рекомендации Грока */
+    gap: 1rem; /* Обновлено по рекомендации Грока */
+  }
+
+  .streaming-link {
+    padding: 1rem; /* Увеличил padding для touch-зоны */
+    min-height: 50px; /* Увеличил min-height для touch-зоны */
   }
 
   .share-button-container {
@@ -359,7 +366,9 @@ body {
 @media (max-width: 428px) {
   .title-name,
   .title-lastname {
-    font-size: clamp(0.9rem, 7vw, 2.2rem);
+    font-size: 4rem !important; /* Обновлено по рекомендации Грока */
+    line-height: 1.1; /* Обновлено по рекомендации Грока */
+    margin: 1rem 0; /* Обновлено по рекомендации Грока */
   }
 
   .subtitle {
@@ -494,7 +503,3 @@ body {
     transition-duration: 0.01ms !important;
   }
 }
-
-/* High contrast mode support */
-
-

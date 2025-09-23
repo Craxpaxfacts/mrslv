@@ -1,19 +1,20 @@
+
 /* src/components/ShareButton.css - ОБНОВЛЕННАЯ ВЕРСИЯ */
 .share-button-container {
   position: relative;
   display: inline-flex;
   justify-content: center;
-  width: 180px; /* Увеличил для мобильных */
-  height: 48px;  /* Увеличил для лучшего touch */
+  width: 90%; /* Обновлено по рекомендации Грока */
+  height: auto; /* Обновлено для гибкости */
   margin-top: 2rem; /* Добавил отступ сверху */
 }
 
 .main-button {
   position: relative;
   width: 100%;
-  height: 100%;
-  border-radius: 24px; /* Уменьшил радиус для лучшего вида */
-  padding: 0.75rem 1.5rem; /* Увеличил padding */
+  min-height: 50px; /* Обновлено по рекомендации Грока */
+  border-radius: 50px; /* Обновлено по рекомендации Грока */
+  padding: 1rem 2rem; /* Обновлено по рекомендации Грока */
   display: flex;
   align-items: center;
   justify-content: center;
@@ -22,10 +23,12 @@
   border: 2px solid rgba(166, 134, 255, 0.3); /* Добавил цветную границу */
   transition: all 0.3s ease;
   cursor: pointer;
-  font-size: clamp(0.9rem, 2.5vw, 1rem); /* Адаптивный размер шрифта */
+  font-size: 1.2rem; /* Обновлено по рекомендации Грока */
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.05em;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.3); /* Обновлено по рекомендации Грока */
+  -webkit-tap-highlight-color: transparent; /* Обновлено по рекомендации Грока */
 }
 
 .main-button:hover {
@@ -96,15 +99,15 @@
 /* Мобильные устройства */
 @media (max-width: 480px) {
   .share-button-container {
-    width: 160px; /* Немного меньше на очень маленьких экранах */
-    height: 44px;
+    width: 100%; /* Обновлено по рекомендации Грока */
+    height: auto;
     margin-top: 1.5rem;
   }
 
   .main-button {
     padding: 0.5rem 1rem;
-    font-size: 0.85rem;
-    border-radius: 22px;
+    font-size: 1.2rem; /* Обновлено по рекомендации Грока */
+    border-radius: 50px;
   }
 
   .icon-button {
@@ -155,4 +158,3 @@
     height: 1.5rem;
   }
 }
-
