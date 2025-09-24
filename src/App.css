@@ -30,6 +30,8 @@ body {
   padding-top: var(--gap-divider-to-next-title);
   box-sizing: border-box;
   text-align: center;
+  content-visibility: auto; /* skip offscreen layout/paint on mobile */
+  contain-intrinsic-size: 800px; /* reserve space to avoid jumps */
 }
 
 .section-content {

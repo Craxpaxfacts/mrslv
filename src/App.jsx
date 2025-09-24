@@ -19,6 +19,7 @@ gsap.registerPlugin(ScrollTrigger);
 
 function App() {
   const sectionsRef = useRef([]);
+  const isIOS = typeof navigator !== 'undefined' && /iPad|iPhone|iPod/.test(navigator.userAgent);
 
   useGSAP(() => {
     sectionsRef.current.forEach((section) => {
@@ -55,16 +56,16 @@ function App() {
         }}
       >
         <LiquidEther
-          mouseForce={16}
-          cursorSize={90}
+          mouseForce={isIOS ? 12 : 16}
+          cursorSize={isIOS ? 80 : 90}
           isViscous={true}
           isBounce={false}
           autoDemo={true}
           colors={['#0000FF', '#00AEEF', '#F0F0FF']}
-          resolution={0.35}
-          viscous={22}
-          iterationsViscous={20}
-          iterationsPoisson={20}
+          resolution={isIOS ? 0.25 : 0.35}
+          viscous={isIOS ? 20 : 22}
+          iterationsViscous={isIOS ? 14 : 20}
+          iterationsPoisson={isIOS ? 14 : 20}
         />
         {/* Градиентная маска для плавного перехода */}
         <div style={{
