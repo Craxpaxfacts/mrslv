@@ -52,6 +52,8 @@ export function play(src, key) {
   }
   if (globalAudio.src !== src) {
     globalAudio.src = src;
+    // Preload the new track for instant playback
+    globalAudio.load();
   }
   // Ensure WebAudio graph is ready so volume works everywhere
   const ok = ensureAudioGraph();
@@ -64,7 +66,15 @@ export function play(src, key) {
     globalAudio.volume = volume01;
   }
   currentKey = key;
-  globalAudio.play();
+  
+  // Start playing immediately without waiting for canplaythrough
+  const playPromise = globalAudio.play();
+  if (playPromise !== undefined) {
+    playPromise.catch(() => {
+      // If autoplay fails, try again after user interaction
+      globalAudio.load();
+    });
+  }
   notify();
 }
 
@@ -125,6 +135,18 @@ export function preload(src) {
   } catch {}
 }
 
-export default { play, toggle, pause, subscribe, getState, setVolume01, getVolume01, preload };
+// Preload all tracks for instant switching
+export function preloadAll(tracks) {
+  try {
+    if (!Array.isArray(tracks)) return;
+    tracks.forEach(track => {
+      if (track?.audio) {
+        preload(track.audio);
+      }
+    });
+  } catch {}
+}
+
+export default { play, toggle, pause, subscribe, getState, setVolume01, getVolume01, preload, preloadAll };
 
 

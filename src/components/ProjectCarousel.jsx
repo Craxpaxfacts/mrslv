@@ -8,7 +8,7 @@ import { useAudioPlayer } from '../hooks/useAudioPlayer';
 import GlowCard from './GlowCard';
 import ElasticSlider from './ElasticSlider';
 import MobilePlayer from './MobilePlayer';
-import { setVolume01, getVolume01 } from '../lib/audioController';
+import { setVolume01, getVolume01, preloadAll } from '../lib/audioController';
 
 import 'swiper/css';
 import 'swiper/css/navigation';
@@ -63,6 +63,11 @@ const ProjectCarousel = ({ tracks, projectId }) => {
 
   // --- 👇 УМНАЯ ЛОГИКА ДЛЯ LOOP 👇 ---
   const isLoopEnabled = tracks.length > 3;
+
+  // Preload all tracks for instant switching
+  React.useEffect(() => {
+    preloadAll(tracks);
+  }, [tracks]);
 
   // На мобильных показываем новый плеер
   if (isMobile) {

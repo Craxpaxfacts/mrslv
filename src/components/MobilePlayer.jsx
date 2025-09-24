@@ -3,7 +3,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { motion, useMotionValue, useTransform, animate } from 'framer-motion';
 import { useAudioPlayer } from '../hooks/useAudioPlayer';
 import { preload as preloadAudio } from '../lib/audioController';
-import { setVolume01, getVolume01 } from '../lib/audioController';
+import { setVolume01, getVolume01, preloadAll } from '../lib/audioController';
 import Slider from './ui/Slider';
 import './MobilePlayer.css';
 import GlareHover from './GlareHover';
@@ -61,17 +61,10 @@ const MobilePlayer = ({ tracks, projectId }) => {
     }
   }, [currentTime, duration]);
 
-  // Preload neighbor tracks to minimize start delay on swipe
+  // Preload all tracks for instant switching
   useEffect(() => {
-    try {
-      const prevIndex = activeIndex === 0 ? tracks.length - 1 : activeIndex - 1;
-      const nextIndex = (activeIndex + 1) % tracks.length;
-      const prev = tracks[prevIndex]?.audio;
-      const next = tracks[nextIndex]?.audio;
-      if (prev) preloadAudio(prev);
-      if (next) preloadAudio(next);
-    } catch {}
-  }, [activeIndex, tracks]);
+    preloadAll(tracks);
+  }, [tracks]);
 
   const handleVolumeChange = (values) => {
     const [newVolume] = values;
