@@ -124,6 +124,14 @@ const ProjectCarousel = ({ tracks, projectId }) => {
                 document.dispatchEvent(e);
               } catch {}
             }
+            // Если трек уже играет, синхронизируем аудио с активным слайдом
+            try {
+              const idx = swiper.realIndex;
+              if (isPlaying && tracks[idx]) {
+                const src = tracks[idx].audio;
+                playAt(src, idx);
+              }
+            } catch {}
           }
         }}
       >

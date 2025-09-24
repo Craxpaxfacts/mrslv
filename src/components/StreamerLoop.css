@@ -12,6 +12,26 @@
   mask-image: none;
 }
 
+/* Мягкие затухания по бокам (и моб, и десктоп) через псевдо-элементы */
+.streamer-loop-container::before,
+.streamer-loop-container::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 36px;
+  pointer-events: none;
+  z-index: 3;
+}
+.streamer-loop-container::before {
+  left: 0;
+  background: linear-gradient(to right, rgba(0,0,0,1), rgba(0,0,0,0));
+}
+.streamer-loop-container::after {
+  right: 0;
+  background: linear-gradient(to left, rgba(0,0,0,1), rgba(0,0,0,0));
+}
+
 .streamer-track {
   display: flex;
   width: max-content;
@@ -63,9 +83,9 @@
 @media (min-width: 1024px) {
   .streamer-loop-container {
     width: clamp(240px, 28vw, 320px);
-    /* ВОЗВРАЩАЕМ МАСКУ ДЛЯ ДЕСКТОПА (как было изначально) */
-    -webkit-mask-image: linear-gradient(to right, transparent 0%, black 12%, black 88%, transparent 100%);
-    mask-image: linear-gradient(to right, transparent 0%, black 12%, black 88%, transparent 100%);
+    /* Дополнительно маска для более длинного затухания на десктопе */
+    -webkit-mask-image: linear-gradient(to right, transparent 0%, black 10%, black 90%, transparent 100%);
+    mask-image: linear-gradient(to right, transparent 0%, black 10%, black 90%, transparent 100%);
   }
   .streamer-item { margin: 0 25px; }
   .streamer-item img { height: 25px; }

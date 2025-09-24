@@ -81,11 +81,17 @@ const MobilePlayer = ({ tracks, projectId }) => {
   const nextTrack = () => {
     const nextIndex = (activeIndex + 1) % tracks.length;
     setActiveIndex(nextIndex);
+    if (isPlaying && tracks[nextIndex]) {
+      playAt(tracks[nextIndex].audio, nextIndex);
+    }
   };
 
   const prevTrack = () => {
     const prevIndex = activeIndex === 0 ? tracks.length - 1 : activeIndex - 1;
     setActiveIndex(prevIndex);
+    if (isPlaying && tracks[prevIndex]) {
+      playAt(tracks[prevIndex].audio, prevIndex);
+    }
   };
 
   // Touch-swipe navigation
@@ -121,10 +127,22 @@ const MobilePlayer = ({ tracks, projectId }) => {
       const outX = dir === 'next' ? -320 : 320;
       const inStart = dir === 'next' ? 320 : -320;
       animate(x, outX, { duration: 0.16, ease: 'easeOut' }).finished.then(() => {
+        let newIndex;
         if (dir === 'next') {
-          setActiveIndex((i) => (i + 1) % tracks.length);
+          setActiveIndex((i) => {
+            const idx = (i + 1) % tracks.length;
+            newIndex = idx;
+            return idx;
+          });
         } else {
-          setActiveIndex((i) => (i === 0 ? tracks.length - 1 : i - 1));
+          setActiveIndex((i) => {
+            const idx = (i === 0 ? tracks.length - 1 : i - 1);
+            newIndex = idx;
+            return idx;
+          });
+        }
+        if (isPlaying && tracks[newIndex]) {
+          playAt(tracks[newIndex].audio, newIndex);
         }
         x.set(inStart);
         animate(x, 0, { type: 'spring', stiffness: 460, damping: 40 });
