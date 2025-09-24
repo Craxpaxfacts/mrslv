@@ -67,8 +67,6 @@ globalAudio.addEventListener('ended', () => {
 });
 
 export function play(src, key, opts = {}) {
-  console.log('PLAY called:', { src, key, opts, currentKey, currentTime: globalAudio.currentTime });
-  
   // Initialize audio on first interaction
   initAudioOnInteraction();
   
@@ -82,18 +80,14 @@ export function play(src, key, opts = {}) {
   if (switchingTrack) {
     try { globalAudio.pause(); } catch {}
     resumeTime = 0;
-    console.log('SWITCHING TRACK, resumeTime = 0');
   } else if (globalAudio.src === src && !globalAudio.paused) {
     // Same track is already playing, don't change currentTime
     resumeTime = globalAudio.currentTime;
-    console.log('SAME TRACK PLAYING, keeping currentTime:', resumeTime);
   } else if (typeof opts.resumeTime === 'number') {
     resumeTime = opts.resumeTime;
-    console.log('USING PROVIDED resumeTime:', resumeTime);
   } else if (globalAudio.src === src) {
     // Same track but paused, keep current position
     resumeTime = globalAudio.currentTime;
-    console.log('SAME TRACK PAUSED, keeping currentTime:', resumeTime);
   }
   
   // Check if we need to change src (normalize paths for comparison)
@@ -104,9 +98,6 @@ export function play(src, key, opts = {}) {
   if (normalizedCurrentSrc !== normalizedNewSrc) {
     globalAudio.src = src;
     resumeTime = 0;
-    console.log('NEW SRC, resumeTime = 0');
-  } else {
-    console.log('SAME SRC, keeping resumeTime:', resumeTime);
   }
   
   if (gainNode) {
@@ -115,15 +106,11 @@ export function play(src, key, opts = {}) {
   globalAudio.volume = volume01;
   currentKey = key;
   
-  console.log('SETTING currentTime to:', resumeTime, 'current:', globalAudio.currentTime);
   // Only set currentTime if we need to change it
   if (resumeTime !== globalAudio.currentTime) {
     try {
       globalAudio.currentTime = resumeTime;
-      console.log('currentTime SET TO:', globalAudio.currentTime);
-    } catch (e) {
-      console.log('ERROR setting currentTime:', e);
-    }
+    } catch {}
   }
   const playPromise = globalAudio.play();
   if (playPromise && typeof playPromise.then === 'function') {
@@ -139,21 +126,17 @@ export function play(src, key, opts = {}) {
 
 export function toggle(src, key, opts = {}) {
   const isSameTrack = currentKey === key;
-  console.log('TOGGLE:', { isSameTrack, paused: globalAudio.paused, currentTime: globalAudio.currentTime, opts });
   
   if (isSameTrack) {
     if (globalAudio.paused) {
       const resumeTime = opts.resumeTime ?? globalAudio.currentTime;
-      console.log('RESUMING with time:', resumeTime);
       play(src, key, { resumeTime });
     } else {
-      console.log('PAUSING');
       pause();
     }
     return;
   }
 
-  console.log('NEW TRACK, starting from 0');
   play(src, key, { resumeTime: opts.resumeTime ?? 0 });
 }
 
