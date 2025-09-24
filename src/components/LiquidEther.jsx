@@ -1100,39 +1100,44 @@ export default function LiquidEther({
         maskRafRef.current = null;
         try {
           const vh = window.innerHeight || 1;
-          const topPadBase = 32;
-          const bottomPad = 80;
+          const bottomPad = 120;
 
-          let topPercent = 4;
-          const sections = Array.from(document.querySelectorAll('.section'));
-          let firstSectionBottom = null;
-          if (sections.length) {
-            const firstRect = sections[0].getBoundingClientRect();
-            firstSectionBottom = firstRect.top + firstRect.height;
-          }
-
-          const activeLinks = document.querySelector('.section.is-active .links-container');
-          const fallbackLinks = document.querySelector('.section .links-container');
-          const targetLinks = activeLinks || fallbackLinks;
-          if (targetLinks && vh > 0) {
-            const rect = targetLinks.getBoundingClientRect();
-            const topPad = (firstSectionBottom != null && rect.top > firstSectionBottom)
-              ? topPadBase
-              : 8;
-            const raw = ((rect.top + rect.height + topPad) / vh) * 100;
-            topPercent = Math.min(40, Math.max(0, raw));
-          }
-
-          let bottomPercent = 20;
+          // bottom padding for follow button
+          let bottomPercent = 12;
           const follow = document.querySelector('.social-button') || document.querySelector('.app-footer');
           if (follow && vh > 0) {
             const rect = follow.getBoundingClientRect();
             const raw = ((vh - rect.top) + bottomPad) / vh * 100;
-            bottomPercent = Math.min(50, Math.max(0, raw));
+            bottomPercent = Math.min(60, Math.max(8, raw));
           }
-
-          container.style.setProperty('--liquid-mask-top', `${topPercent}%`);
           container.style.setProperty('--liquid-mask-bottom', `${bottomPercent}%`);
+
+          // find all streamer loops and detect which is currently visible
+          const streamLoops = Array.from(document.querySelectorAll('.streamer-loop-container'));
+          let targetRect = null;
+          let maxVisibility = 0;
+          streamLoops.forEach(loop => {
+            const rect = loop.getBoundingClientRect();
+            if (!rect || rect.width <= 0 || rect.height <= 0) return;
+            const top = Math.max(0, rect.top);
+            const bottom = Math.min(vh, rect.bottom);
+            const visible = Math.max(0, bottom - top);
+            const ratio = visible / rect.height;
+            if (ratio > maxVisibility) {
+              maxVisibility = ratio;
+              targetRect = rect;
+            }
+          });
+
+          if (targetRect) {
+            const fade = Math.min(120, Math.max(60, targetRect.height * 0.75));
+            container.style.setProperty('--stream-top', `${targetRect.top}px`);
+            container.style.setProperty('--stream-height', `${targetRect.height}px`);
+            container.style.setProperty('--stream-fade', `${fade}px`);
+            container.style.setProperty('--stream-opacity', `${Math.min(1, maxVisibility)}`);
+          } else {
+            container.style.setProperty('--stream-opacity', `0`);
+          }
         } catch (err) {
           void 0;
         }
@@ -1140,7 +1145,7 @@ export default function LiquidEther({
     };
 
     scheduleMaskUpdate();
-    const onScroll = () => scheduleMaskUpdate();
+    const onScroll = scheduleMaskUpdate;
     window.addEventListener('scroll', onScroll, { passive: true });
     window.addEventListener('resize', scheduleMaskUpdate, { passive: true });
     container.style.position = container.style.position || 'relative';
