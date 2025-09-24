@@ -23,7 +23,7 @@ export function useAudioPlayer(keyNamespace = 'default') {
     return unsub;
   }, [keyNamespace]);
 
-  const playAt = useCallback((src, index, options = {}) => {
+  const playAt = useCallback((src, index) => {
     const key = `${keyNamespace}:${index}`;
     // preload neighbors to reduce audible gap on next swipe
     try {
@@ -31,15 +31,8 @@ export function useAudioPlayer(keyNamespace = 'default') {
       if (nextSrc) globalAudio.preload(nextSrc);
     } catch {}
 
-    const last = lastPlayRef.current;
-    const isSameTrack = last.src === src && last.key === key;
-
-    if (!isSameTrack || options.force) {
-      globalAudio.play(src, key);
-      lastPlayRef.current = { src, key };
-    } else {
-      globalAudio.toggle(src, key);
-    }
+    lastPlayRef.current = { src, key };
+    globalAudio.play(src, key);
   }, [keyNamespace]);
 
   const pause = useCallback(() => {

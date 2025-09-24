@@ -6,18 +6,50 @@ let volume01 = 1;
 const preloadCache = new Map(); // src -> HTMLAudioElement
 let userInteracted = false;
 
+let audioCtx = null;
+let gainNode = null;
+let mediaSource = null;
+
+function ensureAudioGraph() {
+  const Ctx = window.AudioContext || window.webkitAudioContext;
+  if (!Ctx) return false;
+  if (!audioCtx) {
+    try {
+      audioCtx = new Ctx();
+    } catch {
+      return false;
+    }
+  }
+  if (!mediaSource) {
+    try {
+      mediaSource = audioCtx.createMediaElementSource(globalAudio);
+    } catch (err) {
+      // Safari throws if called twice; ignore
+    }
+  }
+  if (!gainNode && audioCtx) {
+    gainNode = audioCtx.createGain();
+    gainNode.gain.value = volume01;
+  }
+  if (mediaSource && gainNode) {
+    try { mediaSource.disconnect(); } catch {}
+    try { gainNode.disconnect(); } catch {}
+    try {
+      mediaSource.connect(gainNode);
+      gainNode.connect(audioCtx.destination);
+    } catch {}
+  }
+  return true;
+}
+
 // Initialize audio on first user interaction
 function initAudioOnInteraction() {
   if (userInteracted) return;
   userInteracted = true;
-
-  try {
-    const silentAudio = new Audio();
-    silentAudio.muted = true;
-    silentAudio.preload = 'auto';
-    silentAudio.src = 'data:audio/wav;base64,UklGRigAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQAAAAA=';
-    silentAudio.play().catch(() => {});
-  } catch {}
+  const ok = ensureAudioGraph();
+  if (ok && audioCtx?.state === 'suspended') {
+    try { audioCtx.resume(); } catch {}
+  }
 }
 
 const emitter = new EventTarget();
@@ -35,11 +67,18 @@ export function play(src, key) {
   // Initialize audio on first interaction
   initAudioOnInteraction();
   
+  const ok = ensureAudioGraph();
+  if (ok && audioCtx?.state === 'suspended') {
+    try { audioCtx.resume(); } catch {}
+  }
   if (currentKey && currentKey !== key) {
     try { globalAudio.pause(); } catch {}
   }
   if (globalAudio.src !== src) {
     globalAudio.src = src;
+  }
+  if (gainNode) {
+    try { gainNode.gain.value = volume01; } catch {}
   }
   globalAudio.volume = volume01;
   currentKey = key;
@@ -87,6 +126,9 @@ export function getState() {
 
 export function setVolume01(v) {
   volume01 = Math.min(1, Math.max(0, v));
+  if (gainNode) {
+    try { gainNode.gain.value = volume01; } catch {}
+  }
   globalAudio.volume = volume01;
 }
 

@@ -2,7 +2,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, useMotionValue, useTransform, animate } from 'framer-motion';
 import { useAudioPlayer } from '../hooks/useAudioPlayer';
-import { preload as preloadAudio } from '../lib/audioController';
 import { setVolume01, getVolume01, preloadAll } from '../lib/audioController';
 import Slider from './ui/Slider';
 import './MobilePlayer.css';
