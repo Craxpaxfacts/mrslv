@@ -89,7 +89,7 @@ const ProjectCarousel = ({ tracks, projectId }) => {
             }
           } catch {}
         }}
-        initialSlide={1}
+        initialSlide={0}
         noSwipingSelector={'.swiper-no-swiping'}
         coverflowEffect={{ rotate: 35, stretch: 0, depth: 100, modifier: 1, slideShadows: false }}
         breakpoints={{
@@ -106,13 +106,9 @@ const ProjectCarousel = ({ tracks, projectId }) => {
         className="mySwiper"
         onSwiper={(swiper) => {
           swiperRef.current = swiper;
-          // Этот хак решает проблему с первоначальным позиционированием в loop-режиме
-          setTimeout(() => {
-            if (swiper && !swiper.destroyed) {
-              swiper.slideToLoop(0, 0); 
-              setActiveIndex(swiper.realIndex);
-            }
-          }, 50);
+          if (swiper && !swiper.destroyed) {
+            setActiveIndex(swiper.realIndex);
+          }
         }}
         onSlideChange={(swiper) => {
           if (swiper && !swiper.destroyed) {
