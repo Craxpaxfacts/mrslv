@@ -39,6 +39,9 @@ function ensureAudioGraph() {
       gainNode.connect(audioCtx.destination);
     } catch {}
   }
+  if (audioCtx && audioCtx.state === 'suspended') {
+    try { audioCtx.resume(); } catch {}
+  }
   return true;
 }
 
@@ -55,7 +58,7 @@ function initAudioOnInteraction() {
 const emitter = new EventTarget();
 
 const notify = () => {
-  emitter.dispatchEvent(new CustomEvent('change', { detail: { currentKey, isPlaying: !globalAudio.paused } }));
+  emitter.dispatchEvent(new CustomEvent('change', { detail: { currentKey, isPlaying: !globalAudio.paused, currentTime: globalAudio.currentTime } }));
 };
 
 globalAudio.addEventListener('ended', () => {
@@ -63,7 +66,9 @@ globalAudio.addEventListener('ended', () => {
   notify();
 });
 
-export function play(src, key) {
+export function play(src, key, opts = {}) {
+  console.log('PLAY called:', { src, key, opts, currentKey, currentTime: globalAudio.currentTime });
+  
   // Initialize audio on first interaction
   initAudioOnInteraction();
   
@@ -71,17 +76,55 @@ export function play(src, key) {
   if (ok && audioCtx?.state === 'suspended') {
     try { audioCtx.resume(); } catch {}
   }
-  if (currentKey && currentKey !== key) {
+  const switchingTrack = currentKey && currentKey !== key;
+  let resumeTime = 0;
+  
+  if (switchingTrack) {
     try { globalAudio.pause(); } catch {}
+    resumeTime = 0;
+    console.log('SWITCHING TRACK, resumeTime = 0');
+  } else if (globalAudio.src === src && !globalAudio.paused) {
+    // Same track is already playing, don't change currentTime
+    resumeTime = globalAudio.currentTime;
+    console.log('SAME TRACK PLAYING, keeping currentTime:', resumeTime);
+  } else if (typeof opts.resumeTime === 'number') {
+    resumeTime = opts.resumeTime;
+    console.log('USING PROVIDED resumeTime:', resumeTime);
+  } else if (globalAudio.src === src) {
+    // Same track but paused, keep current position
+    resumeTime = globalAudio.currentTime;
+    console.log('SAME TRACK PAUSED, keeping currentTime:', resumeTime);
   }
-  if (globalAudio.src !== src) {
+  
+  // Check if we need to change src (normalize paths for comparison)
+  const currentSrc = globalAudio.src;
+  const normalizedCurrentSrc = currentSrc ? new URL(currentSrc, window.location.href).pathname : '';
+  const normalizedNewSrc = new URL(src, window.location.href).pathname;
+  
+  if (normalizedCurrentSrc !== normalizedNewSrc) {
     globalAudio.src = src;
+    resumeTime = 0;
+    console.log('NEW SRC, resumeTime = 0');
+  } else {
+    console.log('SAME SRC, keeping resumeTime:', resumeTime);
   }
+  
   if (gainNode) {
     try { gainNode.gain.value = volume01; } catch {}
   }
   globalAudio.volume = volume01;
   currentKey = key;
+  
+  console.log('SETTING currentTime to:', resumeTime, 'current:', globalAudio.currentTime);
+  // Only set currentTime if we need to change it
+  if (resumeTime !== globalAudio.currentTime) {
+    try {
+      globalAudio.currentTime = resumeTime;
+      console.log('currentTime SET TO:', globalAudio.currentTime);
+    } catch (e) {
+      console.log('ERROR setting currentTime:', e);
+    }
+  }
   const playPromise = globalAudio.play();
   if (playPromise && typeof playPromise.then === 'function') {
     playPromise.catch(() => {
@@ -94,17 +137,24 @@ export function play(src, key) {
   notify();
 }
 
-export function toggle(src, key) {
+export function toggle(src, key, opts = {}) {
   const isSameTrack = currentKey === key;
+  console.log('TOGGLE:', { isSameTrack, paused: globalAudio.paused, currentTime: globalAudio.currentTime, opts });
+  
   if (isSameTrack) {
     if (globalAudio.paused) {
-      play(src, key);
+      const resumeTime = opts.resumeTime ?? globalAudio.currentTime;
+      console.log('RESUMING with time:', resumeTime);
+      play(src, key, { resumeTime });
     } else {
+      console.log('PAUSING');
       pause();
     }
-  } else {
-    play(src, key);
+    return;
   }
+
+  console.log('NEW TRACK, starting from 0');
+  play(src, key, { resumeTime: opts.resumeTime ?? 0 });
 }
 
 export function pause() {
@@ -116,12 +166,12 @@ export function subscribe(listener) {
   const handler = (e) => listener(e.detail);
   emitter.addEventListener('change', handler);
   // immediate sync
-  listener({ currentKey, isPlaying: !globalAudio.paused });
+  listener({ currentKey, isPlaying: !globalAudio.paused, currentTime: globalAudio.currentTime });
   return () => emitter.removeEventListener('change', handler);
 }
 
 export function getState() {
-  return { currentKey, isPlaying: !globalAudio.paused };
+  return { currentKey, isPlaying: !globalAudio.paused, currentTime: globalAudio.currentTime };
 }
 
 export function setVolume01(v) {

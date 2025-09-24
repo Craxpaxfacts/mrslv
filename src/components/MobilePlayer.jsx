@@ -43,6 +43,8 @@ const MobilePlayer = ({ tracks, projectId }) => {
   const [volume, setVolume] = useState(getVolume01() * 100);
   const [progress, setProgress] = useState(0);
   const touchStartXRef = useRef(0);
+  const touchStartYRef = useRef(0);
+  const isDraggingRef = useRef(false);
   const touchRafRef = useRef(null);
   const pendingDxRef = useRef(0);
   const x = useMotionValue(0);
@@ -52,13 +54,12 @@ const MobilePlayer = ({ tracks, projectId }) => {
     '0 8px 24px rgba(0,0,0,0.45)',
     '0 12px 28px rgba(0,0,0,0.55)'
   ]);
-  const { isPlaying, currentIndex, playAt, pause, currentTime, duration } = useAudioPlayer(`mobile-${projectId}`);
+  const { isPlaying, currentIndex, currentTime, playAt, pause } = useAudioPlayer(`mobile-${projectId}`);
 
   useEffect(() => {
-    if (duration > 0) {
-      setProgress((currentTime / duration) * 100);
-    }
-  }, [currentTime, duration]);
+    // Progress calculation removed since we don't have duration
+    setProgress(0);
+  }, [currentTime]);
 
   // Preload all tracks for instant switching
   useEffect(() => {
@@ -79,23 +80,34 @@ const MobilePlayer = ({ tracks, projectId }) => {
 
   const playTrack = (index) => {
     if (tracks[index]) {
-      playAt(tracks[index].audio, index);
+      // If same track is playing, just toggle pause/play
+      if (currentIndex === index) {
+        if (isPlaying) {
+          pause();
+        } else {
+          // Resume from current position
+          playAt(tracks[index].audio, index, { resumeTime: currentTime });
+        }
+      } else {
+        // Different track, start from beginning
+        playAt(tracks[index].audio, index, { resumeTime: 0 });
+      }
     }
   };
 
   const nextTrack = () => {
     const nextIndex = (activeIndex + 1) % tracks.length;
     setActiveIndex(nextIndex);
-    if (isPlaying && tracks[nextIndex]) {
-      playAt(tracks[nextIndex].audio, nextIndex);
+    if (tracks[nextIndex]) {
+      playAt(tracks[nextIndex].audio, nextIndex, { resumeTime: 0, force: true });
     }
   };
 
   const prevTrack = () => {
     const prevIndex = activeIndex === 0 ? tracks.length - 1 : activeIndex - 1;
     setActiveIndex(prevIndex);
-    if (isPlaying && tracks[prevIndex]) {
-      playAt(tracks[prevIndex].audio, prevIndex);
+    if (tracks[prevIndex]) {
+      playAt(tracks[prevIndex].audio, prevIndex, { resumeTime: 0, force: true });
     }
   };
 
@@ -103,6 +115,8 @@ const MobilePlayer = ({ tracks, projectId }) => {
   const glareRef = useRef(null);
   const onTouchStart = (e) => {
     touchStartXRef.current = e.changedTouches[0].clientX;
+    touchStartYRef.current = e.changedTouches[0].clientY;
+    isDraggingRef.current = false;
     x.set(0);
     if (glareRef.current && typeof glareRef.current.runOnce === 'function') {
       glareRef.current.runOnce();
@@ -110,7 +124,20 @@ const MobilePlayer = ({ tracks, projectId }) => {
   };
 
   const onTouchMove = (e) => {
+    const touch = e.changedTouches[0];
+    if (!touch) return;
     const dx = e.changedTouches[0].clientX - touchStartXRef.current;
+    const dy = e.changedTouches[0].clientY - touchStartYRef.current;
+    if (!isDraggingRef.current) {
+      const threshold = 8;
+      if (Math.abs(dx) > Math.abs(dy) + threshold) {
+        isDraggingRef.current = true;
+      }
+    }
+    if (isDraggingRef.current) {
+      try { e.preventDefault(); } catch {}
+      try { e.stopPropagation(); } catch {}
+    }
     pendingDxRef.current = dx;
     if (touchRafRef.current == null) {
       touchRafRef.current = requestAnimationFrame(() => {
@@ -122,6 +149,7 @@ const MobilePlayer = ({ tracks, projectId }) => {
   };
 
   const onTouchEnd = () => {
+    isDraggingRef.current = false;
     if (touchRafRef.current != null) {
       cancelAnimationFrame(touchRafRef.current);
       touchRafRef.current = null;
@@ -140,7 +168,7 @@ const MobilePlayer = ({ tracks, projectId }) => {
         x.set(inStart);
         animate(x, 0, { type: 'spring', stiffness: 460, damping: 40 }).finished.then(() => {
           if (tracks[newIndex]) {
-            playAt(tracks[newIndex].audio, newIndex, { force: true });
+            playAt(tracks[newIndex].audio, newIndex, { resumeTime: 0, force: true });
           }
         });
       });

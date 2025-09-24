@@ -66,6 +66,7 @@
   border: none; /* border handled by inner GlareHover */
   box-shadow: 0 8px 24px rgba(0,0,0,0.45);
   overflow: hidden; /* hide sliding overflow for smooth swipe */
+  touch-action: pan-y;
 }
 
 .album-swiper::after { content: none; }
@@ -274,9 +275,11 @@
   border-radius: 9999px;
   background: #ffffff;
   color: #000000;
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.35);
-  border: 1px solid rgba(0, 0, 0, 0.05);
+  box-shadow:
+    0 8px 16px rgba(0, 0, 0, 0.35);
+  border: 2px solid rgba(143, 113, 226, 0.75);
   touch-action: none;
+  outline: none;
 }
 
 .mobile-slider-thumb::after {
@@ -301,10 +304,9 @@
 
 .mobile-slider-thumb[data-state='active'],
 .mobile-slider-thumb:focus-visible {
-  border-color: #8c6de0;
-  box-shadow:
-    0 8px 16px rgba(0, 0, 0, 0.35),
-    0 0 0 4px rgba(140, 109, 224, 0.35);
+  outline: none;
+  border-color: rgba(143, 113, 226, 0.75);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.35);
 }
 
 /* Адаптивность */
