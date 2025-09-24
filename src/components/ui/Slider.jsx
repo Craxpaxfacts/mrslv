@@ -3,6 +3,7 @@ import * as RadixSlider from '@radix-ui/react-slider';
 import clsx from 'clsx';
 
 import React from 'react';
+import { selectionTick } from '../../lib/haptics';
 
 function Slider({ value, className, onTick, ...props }) {
   const [showValue, setShowValue] = React.useState(false);
@@ -16,6 +17,7 @@ function Slider({ value, className, onTick, ...props }) {
     el.classList.remove('mobile-slider-tick');
     void el.offsetWidth; // restart animation
     el.classList.add('mobile-slider-tick');
+    try { selectionTick(); } catch {}
     onTick?.();
   }, [onTick]);
 
