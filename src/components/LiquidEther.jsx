@@ -33,6 +33,7 @@ export default function LiquidEther({
   const intersectionObserverRef = useRef(null);
   const isVisibleRef = useRef(true);
   const resizeRafRef = useRef(null);
+  const maskRafRef = useRef(null);
 
   useEffect(() => {
     if (!mountRef.current) return;
@@ -1093,6 +1094,55 @@ export default function LiquidEther({
     }
 
     const container = mountRef.current;
+    const scheduleMaskUpdate = () => {
+      if (maskRafRef.current != null) return;
+      maskRafRef.current = requestAnimationFrame(() => {
+        maskRafRef.current = null;
+        try {
+          const vh = window.innerHeight || 1;
+          const topPadBase = 32;
+          const bottomPad = 80;
+
+          let topPercent = 4;
+          const sections = Array.from(document.querySelectorAll('.section'));
+          let firstSectionBottom = null;
+          if (sections.length) {
+            const firstRect = sections[0].getBoundingClientRect();
+            firstSectionBottom = firstRect.top + firstRect.height;
+          }
+
+          const activeLinks = document.querySelector('.section.is-active .links-container');
+          const fallbackLinks = document.querySelector('.section .links-container');
+          const targetLinks = activeLinks || fallbackLinks;
+          if (targetLinks && vh > 0) {
+            const rect = targetLinks.getBoundingClientRect();
+            const topPad = (firstSectionBottom != null && rect.top > firstSectionBottom)
+              ? topPadBase
+              : 8;
+            const raw = ((rect.top + rect.height + topPad) / vh) * 100;
+            topPercent = Math.min(40, Math.max(0, raw));
+          }
+
+          let bottomPercent = 20;
+          const follow = document.querySelector('.social-button') || document.querySelector('.app-footer');
+          if (follow && vh > 0) {
+            const rect = follow.getBoundingClientRect();
+            const raw = ((vh - rect.top) + bottomPad) / vh * 100;
+            bottomPercent = Math.min(50, Math.max(0, raw));
+          }
+
+          container.style.setProperty('--liquid-mask-top', `${topPercent}%`);
+          container.style.setProperty('--liquid-mask-bottom', `${bottomPercent}%`);
+        } catch (err) {
+          void 0;
+        }
+      });
+    };
+
+    scheduleMaskUpdate();
+    const onScroll = () => scheduleMaskUpdate();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', scheduleMaskUpdate, { passive: true });
     container.style.position = container.style.position || 'relative';
     container.style.overflow = container.style.overflow || 'hidden';
 
@@ -1156,12 +1206,17 @@ export default function LiquidEther({
       resizeRafRef.current = requestAnimationFrame(() => {
         if (!webglRef.current) return;
         webglRef.current.resize();
+        scheduleMaskUpdate();
       });
     });
     ro.observe(container);
     resizeObserverRef.current = ro;
 
     return () => {
+      if (maskRafRef.current) {
+        cancelAnimationFrame(maskRafRef.current);
+        maskRafRef.current = null;
+      }
       if (rafRef.current) cancelAnimationFrame(rafRef.current);
       if (resizeObserverRef.current) {
         try {
@@ -1177,6 +1232,8 @@ export default function LiquidEther({
           void 0;
         }
       }
+      window.removeEventListener('scroll', onScroll, { passive: true });
+      window.removeEventListener('resize', scheduleMaskUpdate, { passive: true });
       if (webglRef.current) {
         webglRef.current.dispose();
       }

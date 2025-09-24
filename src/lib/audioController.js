@@ -10,19 +10,14 @@ let userInteracted = false;
 function initAudioOnInteraction() {
   if (userInteracted) return;
   userInteracted = true;
-  
-  // Create a silent audio to unlock audio context
-  const silentAudio = new Audio();
-  silentAudio.src = 'data:audio/wav;base64,UklGRigAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQAAAAA=';
-  silentAudio.volume = 0;
-  silentAudio.play().catch(() => {});
-  
-  // Also try to play our main audio silently to unlock it
-  globalAudio.volume = 0;
-  globalAudio.play().then(() => {
-    globalAudio.pause();
-    globalAudio.volume = volume01;
-  }).catch(() => {});
+
+  try {
+    const silentAudio = new Audio();
+    silentAudio.muted = true;
+    silentAudio.preload = 'auto';
+    silentAudio.src = 'data:audio/wav;base64,UklGRigAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQAAAAA=';
+    silentAudio.play().catch(() => {});
+  } catch {}
 }
 
 const emitter = new EventTarget();
@@ -48,13 +43,26 @@ export function play(src, key) {
   }
   globalAudio.volume = volume01;
   currentKey = key;
-  globalAudio.play();
+  const playPromise = globalAudio.play();
+  if (playPromise && typeof playPromise.then === 'function') {
+    playPromise.catch(() => {
+      // Retry once after a short delay (for iOS quirks)
+      setTimeout(() => {
+        try { globalAudio.play(); } catch {}
+      }, 50);
+    });
+  }
   notify();
 }
 
 export function toggle(src, key) {
-  if (currentKey === key && !globalAudio.paused) {
-    pause();
+  const isSameTrack = currentKey === key;
+  if (isSameTrack) {
+    if (globalAudio.paused) {
+      play(src, key);
+    } else {
+      pause();
+    }
   } else {
     play(src, key);
   }
@@ -91,7 +99,8 @@ export function preload(src) {
     const a = new Audio();
     a.preload = 'auto';
     a.src = src;
-    // Don't call load() - it causes delays on iOS
+    // Kick off loading right away for instant start later
+    try { a.load(); } catch {}
     preloadCache.set(src, a);
     // simple LRU cap to 4 items
     if (preloadCache.size > 4) {

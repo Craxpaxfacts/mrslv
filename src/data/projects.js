@@ -47,7 +47,7 @@ export const projects = [
       { src: asset('/assets/logos/spotify.svg'), href: 'https://spotify.com', alt: 'Spotify' },
       { src: asset('/assets/logos/applemusic.svg'), href: 'https://apple.com/music', alt: 'Apple Music' },
       { src: asset('/assets/logos/yandexmusic.svg'), href: 'https://music.yandex.com', alt: 'Yandex Music' },
-      { src: asset('/assets/logos/soundcloud.svg'), href: 'https://music.youtube.com', alt: 'YouTube Music' },
+      { src: asset('/assets/logos/soundcloud.svg'), href: 'https://soundcloud.com/mrs1v', alt: 'Soundcloud' },
     ],
   },
   {

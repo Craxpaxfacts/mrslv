@@ -53,7 +53,7 @@ const MobilePlayer = ({ tracks, projectId }) => {
     '0 8px 24px rgba(0,0,0,0.45)',
     '0 12px 28px rgba(0,0,0,0.55)'
   ]);
-  const { isPlaying, currentIndex, playAt, currentTime, duration } = useAudioPlayer(`mobile-${projectId}`);
+  const { isPlaying, currentIndex, playAt, pause, currentTime, duration } = useAudioPlayer(`mobile-${projectId}`);
 
   useEffect(() => {
     if (duration > 0) {
@@ -140,8 +140,8 @@ const MobilePlayer = ({ tracks, projectId }) => {
         setActiveIndex(newIndex);
         x.set(inStart);
         animate(x, 0, { type: 'spring', stiffness: 460, damping: 40 }).finished.then(() => {
-          if (isPlaying && tracks[newIndex]) {
-            playAt(tracks[newIndex].audio, newIndex);
+          if (tracks[newIndex]) {
+            playAt(tracks[newIndex].audio, newIndex, { force: true });
           }
         });
       });
