@@ -52,8 +52,7 @@ export function play(src, key) {
   }
   if (globalAudio.src !== src) {
     globalAudio.src = src;
-    // Preload the new track for instant playback
-    globalAudio.load();
+    // Don't call load() - it causes delay on iOS
   }
   // Ensure WebAudio graph is ready so volume works everywhere
   const ok = ensureAudioGraph();
@@ -67,13 +66,14 @@ export function play(src, key) {
   }
   currentKey = key;
   
-  // Start playing immediately without waiting for canplaythrough
-  const playPromise = globalAudio.play();
-  if (playPromise !== undefined) {
-    playPromise.catch(() => {
-      // If autoplay fails, try again after user interaction
-      globalAudio.load();
-    });
+  // Start playing immediately - no delays
+  try {
+    globalAudio.play();
+  } catch (e) {
+    // If play fails, try once more
+    setTimeout(() => {
+      try { globalAudio.play(); } catch {}
+    }, 10);
   }
   notify();
 }
@@ -122,10 +122,7 @@ export function preload(src) {
     const a = new Audio();
     a.preload = 'auto';
     a.src = src;
-    // kick off download
-    if (typeof a.load === 'function') {
-      a.load();
-    }
+    // Don't call load() - it causes delays on iOS
     preloadCache.set(src, a);
     // simple LRU cap to 4 items
     if (preloadCache.size > 4) {
