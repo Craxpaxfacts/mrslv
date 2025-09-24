@@ -4,35 +4,25 @@ const globalAudio = new Audio();
 let currentKey = null;
 let volume01 = 1;
 const preloadCache = new Map(); // src -> HTMLAudioElement
+let userInteracted = false;
 
-// --- WebAudio pipeline for reliable volume control (iOS-safe) ---
-let audioCtx = null;
-let gainNode = null;
-let mediaSource = null;
-
-function ensureAudioGraph() {
-  try {
-    if (!audioCtx) {
-      const Ctx = window.AudioContext || window.webkitAudioContext;
-      if (!Ctx) return false;
-      audioCtx = new Ctx();
-    }
-    if (!mediaSource) {
-      mediaSource = audioCtx.createMediaElementSource(globalAudio);
-    }
-    if (!gainNode) {
-      gainNode = audioCtx.createGain();
-      gainNode.gain.value = volume01;
-    }
-    // Connect once
-    if (mediaSource && gainNode) {
-      try { mediaSource.disconnect(); } catch {}
-      try { gainNode.disconnect(); } catch {}
-      mediaSource.connect(gainNode);
-      gainNode.connect(audioCtx.destination);
-    }
-    return true;
-  } catch { return false; }
+// Initialize audio on first user interaction
+function initAudioOnInteraction() {
+  if (userInteracted) return;
+  userInteracted = true;
+  
+  // Create a silent audio to unlock audio context
+  const silentAudio = new Audio();
+  silentAudio.src = 'data:audio/wav;base64,UklGRigAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQAAAAA=';
+  silentAudio.volume = 0;
+  silentAudio.play().catch(() => {});
+  
+  // Also try to play our main audio silently to unlock it
+  globalAudio.volume = 0;
+  globalAudio.play().then(() => {
+    globalAudio.pause();
+    globalAudio.volume = volume01;
+  }).catch(() => {});
 }
 
 const emitter = new EventTarget();
@@ -47,6 +37,9 @@ globalAudio.addEventListener('ended', () => {
 });
 
 export function play(src, key) {
+  // Initialize audio on first interaction
+  initAudioOnInteraction();
+  
   if (currentKey && currentKey !== key) {
     try { globalAudio.pause(); } catch {}
   }
