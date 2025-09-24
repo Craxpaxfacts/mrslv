@@ -1,7 +1,7 @@
 import './GlareHover.css';
 import React from 'react';
 
-const GlareHover = ({
+const GlareHover = React.forwardRef(({
   width = '500px',
   height = '500px',
   background = '#000',
@@ -18,7 +18,7 @@ const GlareHover = ({
   autoPlayInterval = 7000,
   className = '',
   style = {}
-}) => {
+}, ref) => {
   const hex = glareColor.replace('#', '');
   let rgba = glareColor;
   if (/^[0-9A-Fa-f]{6}$/.test(hex)) {
@@ -45,18 +45,27 @@ const GlareHover = ({
     '--gh-border': borderColor
   };
 
-  const ref = React.useRef(null);
+  const rootRef = React.useRef(null);
   const timeoutRef = React.useRef(null);
 
   const runOnce = React.useCallback(() => {
-    if (!ref.current) return;
-    ref.current.classList.add('glare-hover--run');
+    if (!rootRef.current) return;
+    const el = rootRef.current;
+    // Restart animation even if already running
+    if (el.classList.contains('glare-hover--run')) {
+      el.classList.remove('glare-hover--run');
+      // Force reflow to reset animation state
+      void el.offsetWidth;
+    }
+    el.classList.add('glare-hover--run');
     if (timeoutRef.current) clearTimeout(timeoutRef.current);
     timeoutRef.current = setTimeout(() => {
-      if (!ref.current) return;
-      ref.current.classList.remove('glare-hover--run');
+      if (!rootRef.current) return;
+      rootRef.current.classList.remove('glare-hover--run');
     }, transitionDuration + 50);
   }, [transitionDuration]);
+
+  React.useImperativeHandle(ref, () => ({ runOnce }), [runOnce]);
 
   React.useEffect(() => {
     if (playOnce) return;
@@ -64,7 +73,7 @@ const GlareHover = ({
     if (typeof window !== 'undefined' && window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
       return; // respect reduced motion
     }
-    const el = ref.current;
+    const el = rootRef.current;
     if (!el) return;
     let timer;
     runOnce();
@@ -74,7 +83,7 @@ const GlareHover = ({
 
   return (
     <div
-      ref={ref}
+      ref={rootRef}
       className={`glare-hover ${playOnce ? 'glare-hover--play-once' : ''} ${className}`}
       style={{ ...vars, ...style }}
       onPointerDown={runOnce}
@@ -84,7 +93,7 @@ const GlareHover = ({
       {children}
     </div>
   );
-};
+});
 
 export default GlareHover;
 

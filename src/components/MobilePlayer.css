@@ -87,6 +87,8 @@
   width: 100%;
   height: 100%;
   display: flex;
+  touch-action: pan-y;
+  will-change: transform;
 }
 
 .album-card img {
@@ -199,6 +201,17 @@
   height: 100%;
   touch-action: none;
   user-select: none;
+}
+
+/* Visual tick pulse when the value crosses discrete steps */
+.mobile-slider-root.mobile-slider-tick .mobile-slider-range {
+  animation: sliderPulse 140ms ease-out 1;
+}
+
+@keyframes sliderPulse {
+  0% { box-shadow: 0 0 0 rgba(166, 134, 255, 0.0); }
+  50% { box-shadow: 0 0 10px rgba(166, 134, 255, 0.55); }
+  100% { box-shadow: 0 0 0 rgba(166, 134, 255, 0.0); }
 }
 
 .mobile-slider-track {

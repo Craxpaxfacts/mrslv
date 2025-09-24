@@ -43,6 +43,8 @@ const MobilePlayer = ({ tracks, projectId }) => {
   const [volume, setVolume] = useState(getVolume01() * 100);
   const [progress, setProgress] = useState(0);
   const touchStartXRef = useRef(0);
+  const touchRafRef = useRef(null);
+  const pendingDxRef = useRef(0);
   const x = useMotionValue(0);
   const scale = useTransform(x, [-120, 0, 120], [0.96, 1, 0.96]);
   const shadow = useTransform(x, [-120, 0, 120], [
@@ -87,39 +89,60 @@ const MobilePlayer = ({ tracks, projectId }) => {
   };
 
   // Touch-swipe navigation
+  const glareRef = useRef(null);
   const onTouchStart = (e) => {
     touchStartXRef.current = e.changedTouches[0].clientX;
     x.set(0);
+    if (glareRef.current && typeof glareRef.current.runOnce === 'function') {
+      glareRef.current.runOnce();
+    }
   };
 
   const onTouchMove = (e) => {
     const dx = e.changedTouches[0].clientX - touchStartXRef.current;
-    x.set(Math.max(-140, Math.min(140, dx)));
+    pendingDxRef.current = dx;
+    if (touchRafRef.current == null) {
+      touchRafRef.current = requestAnimationFrame(() => {
+        const clamped = Math.max(-140, Math.min(140, pendingDxRef.current));
+        x.set(clamped);
+        touchRafRef.current = null;
+      });
+    }
   };
 
   const onTouchEnd = () => {
+    if (touchRafRef.current != null) {
+      cancelAnimationFrame(touchRafRef.current);
+      touchRafRef.current = null;
+    }
     const current = x.get();
-    const threshold = 80;
+    const threshold = 64; // slightly lighter swipe
     const slideTo = (dir) => {
       const outX = dir === 'next' ? -320 : 320;
       const inStart = dir === 'next' ? 320 : -320;
-      animate(x, outX, { duration: 0.18, ease: 'easeOut' }).finished.then(() => {
+      animate(x, outX, { duration: 0.16, ease: 'easeOut' }).finished.then(() => {
         if (dir === 'next') {
           setActiveIndex((i) => (i + 1) % tracks.length);
         } else {
           setActiveIndex((i) => (i === 0 ? tracks.length - 1 : i - 1));
         }
         x.set(inStart);
-        animate(x, 0, { type: 'spring', stiffness: 420, damping: 40 });
+        animate(x, 0, { type: 'spring', stiffness: 460, damping: 40 });
       });
     };
 
     if (current <= -threshold) {
+      if (glareRef.current && typeof glareRef.current.runOnce === 'function') {
+        glareRef.current.runOnce();
+      }
       slideTo('next');
     } else if (current >= threshold) {
+      if (glareRef.current && typeof glareRef.current.runOnce === 'function') {
+        glareRef.current.runOnce();
+      }
       slideTo('prev');
     } else {
-      animate(x, 0, { type: 'spring', stiffness: 420, damping: 38 });
+      animate(x, 0, { type: 'spring', stiffness: 460, damping: 38 });
     }
   };
 
@@ -147,6 +170,7 @@ const MobilePlayer = ({ tracks, projectId }) => {
             onTouchEnd={onTouchEnd}
           >
             <GlareHover
+              ref={glareRef}
               width="var(--album-size)"
               height="var(--album-size)"
               background="transparent"

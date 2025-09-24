@@ -4,13 +4,32 @@ import clsx from 'clsx';
 
 import React from 'react';
 
-function Slider({ value, className, ...props }) {
+function Slider({ value, className, onTick, ...props }) {
   const [showValue, setShowValue] = React.useState(false);
   const hideTimerRef = React.useRef(null);
+  const rootRef = React.useRef(null);
+  const lastStepRef = React.useRef(null);
+
+  const triggerTick = React.useCallback(() => {
+    const el = rootRef.current;
+    if (!el) return;
+    el.classList.remove('mobile-slider-tick');
+    void el.offsetWidth; // restart animation
+    el.classList.add('mobile-slider-tick');
+    onTick?.();
+  }, [onTick]);
 
   const handleValueChange = (vals) => {
     props.onValueChange?.(vals);
     setShowValue(true);
+    const step = vals?.[0];
+    if (step != null) {
+      const rounded = Math.round(step / 5) * 5; // tick every 5 units
+      if (lastStepRef.current !== rounded) {
+        lastStepRef.current = rounded;
+        triggerTick();
+      }
+    }
     if (hideTimerRef.current) clearTimeout(hideTimerRef.current);
     hideTimerRef.current = setTimeout(() => setShowValue(false), 900);
   };
@@ -26,6 +45,7 @@ function Slider({ value, className, ...props }) {
   return (
     <RadixSlider.Root
       {...props}
+      ref={rootRef}
       value={value}
       className={clsx('mobile-slider-root', className)}
       onValueChange={handleValueChange}
