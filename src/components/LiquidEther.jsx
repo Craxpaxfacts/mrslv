@@ -1103,12 +1103,12 @@ export default function LiquidEther({
           const bottomPad = 120;
 
           // bottom padding for follow button
-          let bottomPercent = 12;
+          let bottomPercent = 70;
           const follow = document.querySelector('.social-button') || document.querySelector('.app-footer');
           if (follow && vh > 0) {
             const rect = follow.getBoundingClientRect();
             const raw = ((vh - rect.top) + bottomPad) / vh * 100;
-            bottomPercent = Math.min(60, Math.max(8, raw));
+            bottomPercent = Math.min(80, Math.max(8, raw));
           }
           container.style.setProperty('--liquid-mask-bottom', `${bottomPercent}%`);
 
