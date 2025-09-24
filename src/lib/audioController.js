@@ -52,29 +52,10 @@ export function play(src, key) {
   }
   if (globalAudio.src !== src) {
     globalAudio.src = src;
-    // Don't call load() - it causes delay on iOS
   }
-  // Ensure WebAudio graph is ready so volume works everywhere
-  const ok = ensureAudioGraph();
-  if (ok && audioCtx?.state === 'suspended') {
-    try { audioCtx.resume(); } catch {}
-  }
-  if (gainNode) {
-    try { gainNode.gain.value = volume01; } catch {}
-  } else {
-    globalAudio.volume = volume01;
-  }
+  globalAudio.volume = volume01;
   currentKey = key;
-  
-  // Start playing immediately - no delays
-  try {
-    globalAudio.play();
-  } catch (e) {
-    // If play fails, try once more
-    setTimeout(() => {
-      try { globalAudio.play(); } catch {}
-    }, 10);
-  }
+  globalAudio.play();
   notify();
 }
 
@@ -105,12 +86,7 @@ export function getState() {
 
 export function setVolume01(v) {
   volume01 = Math.min(1, Math.max(0, v));
-  // Route to WebAudio GainNode if available; fallback to element volume
-  if (gainNode) {
-    try { gainNode.gain.value = volume01; } catch { globalAudio.volume = volume01; }
-  } else {
-    globalAudio.volume = volume01;
-  }
+  globalAudio.volume = volume01;
 }
 
 export function getVolume01() { return volume01; }
