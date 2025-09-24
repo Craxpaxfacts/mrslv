@@ -21,7 +21,10 @@ export default function LiquidEther({
   autoIntensity = 2.2,
   takeoverDuration = 0.25,
   autoResumeDelay = 1000,
-  autoRampDuration = 0.6
+  autoRampDuration = 0.6,
+  // Новые опции: зоны, которые эффект «обходит»
+  avoidSelectors = [], // массив CSS-селекторов
+  avoidPadding = 10 // px паддинг вокруг зон
 }) {
   const mountRef = useRef(null);
   const webglRef = useRef(null);
@@ -407,6 +410,8 @@ export default function LiquidEther({
     uniform vec4 bgColor;
     uniform float time;
     uniform float ditherAmount;
+    uniform vec4 uRects[3]; // up to 3 прямоугольника в UV: x0,y0,x1,y1
+    uniform float uRadius; // радиус мягкого края в UV
     varying vec2 uv;
     void main(){
     vec2 vel = texture2D(velocity, uv).xy;
@@ -420,6 +425,21 @@ export default function LiquidEther({
     outRGB += (n - 0.5) * ditherAmount;
     outRGB = clamp(outRGB, 0.0, 1.0);
     float outA = mix(bgColor.a, 1.0, lenv);
+    // --- мягкое подавление ТОЛЬКО внутри зон ---
+    float mask = 1.0;
+    for (int i = 0; i < 3; i++) {
+      vec4 r = uRects[i];
+      float valid = step(0.001, r.z - r.x) * step(0.001, r.w - r.y);
+      float insideX = step(r.x, uv.x) * step(uv.x, r.z);
+      float insideY = step(r.y, uv.y) * step(uv.y, r.w);
+      float inside = insideX * insideY * valid;
+      float edge = min(min(uv.x - r.x, r.z - uv.x), min(uv.y - r.y, r.w - uv.y));
+      float soft = smoothstep(0.0, uRadius, edge); // 0 у границы, 1 в глубине/снаружи
+      float localMask = 1.0 - inside * (1.0 - soft);
+      mask *= localMask;
+    }
+    outA *= mask;
+    outRGB *= mask;
     gl_FragColor = vec4(outRGB, outA);
 }
 `;
@@ -976,12 +996,54 @@ export default function LiquidEther({
       init() {
         this.props.$wrapper.prepend(Common.renderer.domElement);
         this.output = new Output();
+        // инициализируем униформы для зон
+        const mat = this.output.output.material;
+        if (mat && mat.uniforms) {
+          mat.uniforms.uRects = { value: [
+            new THREE.Vector4(0,0,0,0),
+            new THREE.Vector4(0,0,0,0),
+            new THREE.Vector4(0,0,0,0)
+          ] };
+          mat.uniforms.uRadius = { value: 0.12 }; // более широкий мягкий край ~12% экрана
+        }
       }
       resize() {
         Common.resize();
         this.output.resize();
       }
       render() {
+        // обновляем зоны-исключения → переводим из экранных координат в UV контейнера
+        if (this.output && this.output.output && this.output.output.material) {
+          const mat = this.output.output.material;
+          const rects = [];
+          const cont = this.props.$wrapper;
+          if (cont && avoidSelectors && avoidSelectors.length) {
+            const cRect = cont.getBoundingClientRect();
+            for (let i = 0; i < Math.min(avoidSelectors.length, 3); i++) {
+              const sel = avoidSelectors[i];
+              try {
+                const el = document.querySelector(sel);
+                if (!el) continue;
+                const r = el.getBoundingClientRect();
+                const pad = avoidPadding || 0;
+                const x0 = (r.left - pad - cRect.left) / cRect.width;
+                const y0 = (r.top - pad - cRect.top) / cRect.height;
+                const x1 = (r.right + pad - cRect.left) / cRect.width;
+                const y1 = (r.bottom + pad - cRect.top) / cRect.height;
+                const rx0 = Math.max(0.0, Math.min(1.0, x0));
+                const ry0 = Math.max(0.0, Math.min(1.0, y0));
+                const rx1 = Math.max(0.0, Math.min(1.0, x1));
+                const ry1 = Math.max(0.0, Math.min(1.0, y1));
+                rects.push(new THREE.Vector4(rx0, ry0, rx1, ry1));
+              } catch {}
+            }
+          }
+          if (mat.uniforms.uRects) {
+            for (let i = 0; i < 3; i++) {
+              mat.uniforms.uRects.value[i] = rects[i] || new THREE.Vector4(0,0,0,0);
+            }
+          }
+        }
         if (this.autoDriver) this.autoDriver.update();
         Mouse.update();
         Common.update();

@@ -112,7 +112,8 @@ const ProjectCarousel = ({ tracks, projectId }) => {
         }}
         onSlideChange={(swiper) => {
           if (swiper && !swiper.destroyed) {
-            setActiveIndex(swiper.realIndex);
+            const idx = swiper.realIndex;
+            setActiveIndex(idx);
             // После смены активного слайда инициируем обновление glow у всех карточек
             // Высылаем искусственное событие pointermove c текущими координатами курсора
             if (typeof window !== 'undefined' && 'MouseEvent' in window) {
@@ -125,12 +126,16 @@ const ProjectCarousel = ({ tracks, projectId }) => {
               } catch {}
             }
             // Если трек уже играет, синхронизируем аудио с активным слайдом
+            // Запускаем аудио ровно когда слайд зафиксировался как активный в Swiper (после transition)
             try {
-              const idx = swiper.realIndex;
-              if (isPlaying && tracks[idx]) {
-                const src = tracks[idx].audio;
-                playAt(src, idx);
-              }
+              const onTr = () => {
+                if (isPlaying && tracks[idx]) {
+                  const src = tracks[idx].audio;
+                  playAt(src, idx);
+                }
+                swiper.off('transitionEnd', onTr);
+              };
+              swiper.on('transitionEnd', onTr);
             } catch {}
           }
         }}

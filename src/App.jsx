@@ -56,16 +56,19 @@ function App() {
         }}
       >
         <LiquidEther
-          mouseForce={isIOS ? 12 : 16}
-          cursorSize={isIOS ? 80 : 90}
+          mouseForce={isIOS ? 16 : 16}
+          cursorSize={isIOS ? 90 : 90}
           isViscous={true}
           isBounce={false}
           autoDemo={true}
+          autoIntensity={isIOS ? 3.6 : 2.6}
           colors={['#0000FF', '#00AEEF', '#F0F0FF']}
-          resolution={isIOS ? 0.25 : 0.35}
+          resolution={isIOS ? 0.35 : 0.35}
           viscous={isIOS ? 20 : 22}
-          iterationsViscous={isIOS ? 14 : 20}
-          iterationsPoisson={isIOS ? 14 : 20}
+          iterationsViscous={isIOS ? 16 : 20}
+          iterationsPoisson={isIOS ? 16 : 20}
+          avoidSelectors={[]}
+          avoidPadding={0}
         />
         {/* Градиентная маска для плавного перехода */}
         <div style={{
@@ -85,6 +88,7 @@ function App() {
             <Section
               ref={(el) => (sectionsRef.current[index] = el)}
               {...project}
+              className={index === 0 ? 'hero-section' : project.className}
             />
             {index < projects.length - 1 && <div className="divider" />}
           </div>

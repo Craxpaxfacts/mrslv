@@ -2,6 +2,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, useMotionValue, useTransform, animate } from 'framer-motion';
 import { useAudioPlayer } from '../hooks/useAudioPlayer';
+import { preload as preloadAudio } from '../lib/audioController';
 import { setVolume01, getVolume01 } from '../lib/audioController';
 import Slider from './ui/Slider';
 import './MobilePlayer.css';
@@ -59,6 +60,18 @@ const MobilePlayer = ({ tracks, projectId }) => {
       setProgress((currentTime / duration) * 100);
     }
   }, [currentTime, duration]);
+
+  // Preload neighbor tracks to minimize start delay on swipe
+  useEffect(() => {
+    try {
+      const prevIndex = activeIndex === 0 ? tracks.length - 1 : activeIndex - 1;
+      const nextIndex = (activeIndex + 1) % tracks.length;
+      const prev = tracks[prevIndex]?.audio;
+      const next = tracks[nextIndex]?.audio;
+      if (prev) preloadAudio(prev);
+      if (next) preloadAudio(next);
+    } catch {}
+  }, [activeIndex, tracks]);
 
   const handleVolumeChange = (values) => {
     const [newVolume] = values;
@@ -126,26 +139,18 @@ const MobilePlayer = ({ tracks, projectId }) => {
     const slideTo = (dir) => {
       const outX = dir === 'next' ? -320 : 320;
       const inStart = dir === 'next' ? 320 : -320;
+      const newIndex = dir === 'next'
+        ? (activeIndex + 1) % tracks.length
+        : (activeIndex === 0 ? tracks.length - 1 : activeIndex - 1);
+      // Animate out → swap index → animate in → THEN start audio exactly when new cover is centered
       animate(x, outX, { duration: 0.16, ease: 'easeOut' }).finished.then(() => {
-        let newIndex;
-        if (dir === 'next') {
-          setActiveIndex((i) => {
-            const idx = (i + 1) % tracks.length;
-            newIndex = idx;
-            return idx;
-          });
-        } else {
-          setActiveIndex((i) => {
-            const idx = (i === 0 ? tracks.length - 1 : i - 1);
-            newIndex = idx;
-            return idx;
-          });
-        }
-        if (isPlaying && tracks[newIndex]) {
-          playAt(tracks[newIndex].audio, newIndex);
-        }
+        setActiveIndex(newIndex);
         x.set(inStart);
-        animate(x, 0, { type: 'spring', stiffness: 460, damping: 40 });
+        animate(x, 0, { type: 'spring', stiffness: 460, damping: 40 }).finished.then(() => {
+          if (isPlaying && tracks[newIndex]) {
+            playAt(tracks[newIndex].audio, newIndex);
+          }
+        });
       });
     };
 

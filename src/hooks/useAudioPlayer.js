@@ -24,6 +24,11 @@ export function useAudioPlayer(keyNamespace = 'default') {
 
   const playAt = useCallback((src, index) => {
     const key = `${keyNamespace}:${index}`;
+    // preload neighbors to reduce audible gap on next swipe
+    try {
+      const nextSrc = typeof src === 'string' ? src : null;
+      if (nextSrc) globalAudio.preload(nextSrc);
+    } catch {}
     globalAudio.toggle(src, key);
   }, [keyNamespace]);
 

@@ -34,6 +34,12 @@ body {
   contain-intrinsic-size: 800px; /* reserve space to avoid jumps */
 }
 
+/* Полное исключение hero-зоны из фонового эффекта */
+.hero-section {
+  position: relative;
+  z-index: 3; /* выше WebGL-канваса */
+}
+
 .section-content {
   width: 100%;
   max-width: 100%;
