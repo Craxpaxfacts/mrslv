@@ -105,7 +105,9 @@ export default function LiquidEther({
       }
       init(container) {
         this.container = container;
-        const dpr = Math.min(window.devicePixelRatio || 1, 2);
+        const isMobileDpr = typeof window !== 'undefined' && window.matchMedia && window.matchMedia('(max-width: 767px)').matches;
+        // Cap DPR harder on mobile to reduce GPU load
+        const dpr = isMobileDpr ? 1 : Math.min(window.devicePixelRatio || 1, 2);
         const area = window.innerWidth * window.innerHeight;
         const maxDpr = area > 2000000 ? 1.25 : 1.5;
         this.pixelRatio = Math.min(dpr, maxDpr);
@@ -1054,7 +1056,8 @@ export default function LiquidEther({
         if (!this.running) return; // safety
         // If user is actively scrolling, render every other frame to reduce contention
         const isFastScroll = typeof window !== 'undefined' && window.__lenis && window.__lenis.velocity && Math.abs(window.__lenis.velocity) > 0.5;
-        if (isFastScroll) {
+        const isMobileLoop = typeof window !== 'undefined' && window.matchMedia && window.matchMedia('(max-width: 767px)').matches;
+        if (isFastScroll || isMobileLoop) {
           if (!this._skip) {
             this.render();
           }
@@ -1155,7 +1158,7 @@ export default function LiquidEther({
       $wrapper: container,
       autoDemo,
       autoSpeed,
-      autoIntensity: isMobile ? autoIntensity * 0.6 : autoIntensity,
+      autoIntensity: isMobile ? autoIntensity * 0.4 : autoIntensity,
       takeoverDuration,
       autoResumeDelay,
       autoRampDuration
@@ -1168,7 +1171,7 @@ export default function LiquidEther({
       if (!sim) return;
       const prevRes = sim.options.resolution;
       Object.assign(sim.options, {
-        mouse_force: isMobile ? mouseForce * 0.65 : mouseForce,
+        mouse_force: isMobile ? mouseForce * 0.45 : mouseForce,
         cursor_size: cursorSize,
         isViscous,
         viscous,
@@ -1176,7 +1179,7 @@ export default function LiquidEther({
         iterations_poisson: iterationsPoisson,
         dt,
         BFECC,
-        resolution: isMobile ? Math.min(0.5, Math.max(0.35, (typeof resolution === 'number' ? resolution : 0.5) * 0.9)) : resolution,
+        resolution: isMobile ? Math.min(0.45, Math.max(0.3, (typeof resolution === 'number' ? resolution : 0.5) * 0.8)) : resolution,
         isBounce
       });
       if (resolution !== prevRes) {
@@ -1186,6 +1189,37 @@ export default function LiquidEther({
     applyOptionsFromProps();
 
     webgl.start();
+
+    // Mobile performance profile: auto pause after 10s unless interacting with player
+    const isMobilePerf = typeof window !== 'undefined' && window.matchMedia && window.matchMedia('(max-width: 767px)').matches;
+    let autoPauseTimer = null;
+    const playerArea = document.querySelector('.mobile-player, .player, .controls');
+    const resetAutoPause = () => {
+      if (!isMobilePerf) return;
+      if (autoPauseTimer) { clearTimeout(autoPauseTimer); autoPauseTimer = null; }
+      // do not auto pause while user is interacting with the player
+      const interacting = !!document.activeElement && playerArea && playerArea.contains(document.activeElement);
+      autoPauseTimer = setTimeout(() => {
+        if (!webglRef.current) return;
+        // skip pausing if pointer is down over the player
+        if (playerArea && (playerArea.matches(':active'))) return;
+        // fade out visually then pause
+        try { container.style.opacity = '0'; } catch {}
+        setTimeout(() => {
+          if (!webglRef.current) return;
+          webglRef.current.pause();
+        }, 600);
+      }, 10000);
+    };
+    if (isMobilePerf) {
+      resetAutoPause();
+      window.addEventListener('touchstart', () => {
+        try { container.style.opacity = '1'; } catch {}
+        if (webglRef.current && !webglRef.current.running) webglRef.current.start();
+        resetAutoPause();
+      }, { passive: true });
+      window.addEventListener('scroll', resetAutoPause, { passive: true });
+    }
 
     // IntersectionObserver to pause rendering when not visible
     const io = new IntersectionObserver(

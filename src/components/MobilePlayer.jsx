@@ -45,6 +45,7 @@ const MobilePlayer = ({ tracks, projectId }) => {
   const touchStartXRef = useRef(0);
   const touchStartYRef = useRef(0);
   const isDraggingRef = useRef(false);
+  const isVerticalScrollRef = useRef(false);
   const touchRafRef = useRef(null);
   const pendingDxRef = useRef(0);
   const x = useMotionValue(0);
@@ -117,6 +118,7 @@ const MobilePlayer = ({ tracks, projectId }) => {
     touchStartXRef.current = e.changedTouches[0].clientX;
     touchStartYRef.current = e.changedTouches[0].clientY;
     isDraggingRef.current = false;
+    isVerticalScrollRef.current = false;
     x.set(0);
     if (glareRef.current && typeof glareRef.current.runOnce === 'function') {
       glareRef.current.runOnce();
@@ -128,28 +130,37 @@ const MobilePlayer = ({ tracks, projectId }) => {
     if (!touch) return;
     const dx = e.changedTouches[0].clientX - touchStartXRef.current;
     const dy = e.changedTouches[0].clientY - touchStartYRef.current;
-    if (!isDraggingRef.current) {
-      const threshold = 8;
-      if (Math.abs(dx) > Math.abs(dy) + threshold) {
-        isDraggingRef.current = true;
+    if (!isDraggingRef.current && !isVerticalScrollRef.current) {
+      const threshold = 12;
+      if (Math.abs(dy) > Math.abs(dx) + threshold) {
+        isVerticalScrollRef.current = true; // treat as page scroll → do nothing
+      } else if (Math.abs(dx) > Math.abs(dy) + threshold) {
+        isDraggingRef.current = true; // treat as horizontal swipe
+        // lock page scroll while swiping
+        try { document.body.style.overflow = 'hidden'; } catch {}
       }
     }
-    if (isDraggingRef.current) {
+    if (isDraggingRef.current && !isVerticalScrollRef.current) {
       try { e.preventDefault(); } catch {}
       try { e.stopPropagation(); } catch {}
     }
-    pendingDxRef.current = dx;
-    if (touchRafRef.current == null) {
-      touchRafRef.current = requestAnimationFrame(() => {
-        const clamped = Math.max(-140, Math.min(140, pendingDxRef.current));
-        x.set(clamped);
-        touchRafRef.current = null;
-      });
+    if (!isVerticalScrollRef.current) {
+      pendingDxRef.current = dx;
+      if (touchRafRef.current == null) {
+        touchRafRef.current = requestAnimationFrame(() => {
+          const clamped = Math.max(-140, Math.min(140, pendingDxRef.current));
+          x.set(clamped);
+          touchRafRef.current = null;
+        });
+      }
     }
   };
 
   const onTouchEnd = () => {
     isDraggingRef.current = false;
+    isVerticalScrollRef.current = false;
+    // release page scroll lock
+    try { document.body.style.overflow = ''; } catch {}
     if (touchRafRef.current != null) {
       cancelAnimationFrame(touchRafRef.current);
       touchRafRef.current = null;
