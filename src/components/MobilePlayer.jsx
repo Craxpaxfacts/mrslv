@@ -48,6 +48,8 @@ const MobilePlayer = ({ tracks, projectId }) => {
   const isVerticalScrollRef = useRef(false);
   const touchRafRef = useRef(null);
   const pendingDxRef = useRef(0);
+  const lastMoveTimeRef = useRef(0);
+  const lastMoveXRef = useRef(0);
   const x = useMotionValue(0);
   const scale = useTransform(x, [-120, 0, 120], [0.96, 1, 0.96]);
   const shadow = useTransform(x, [-120, 0, 120], [
@@ -119,6 +121,8 @@ const MobilePlayer = ({ tracks, projectId }) => {
     touchStartYRef.current = e.changedTouches[0].clientY;
     isDraggingRef.current = false;
     isVerticalScrollRef.current = false;
+    lastMoveTimeRef.current = performance.now();
+    lastMoveXRef.current = touchStartXRef.current;
     x.set(0);
     if (glareRef.current && typeof glareRef.current.runOnce === 'function') {
       glareRef.current.runOnce();
@@ -131,14 +135,20 @@ const MobilePlayer = ({ tracks, projectId }) => {
     const dx = e.changedTouches[0].clientX - touchStartXRef.current;
     const dy = e.changedTouches[0].clientY - touchStartYRef.current;
     if (!isDraggingRef.current && !isVerticalScrollRef.current) {
-      const threshold = 12;
-      if (Math.abs(dy) > Math.abs(dx) + threshold) {
+      const threshold = 6;
+      const now = performance.now();
+      const dt = Math.max(1, now - lastMoveTimeRef.current);
+      const vx = (touch.clientX - lastMoveXRef.current) / dt; // px/ms
+      const flick = Math.abs(vx) > 0.35;
+      if (Math.abs(dy) > Math.abs(dx) + threshold && !flick) {
         isVerticalScrollRef.current = true; // treat as page scroll → do nothing
-      } else if (Math.abs(dx) > Math.abs(dy) + threshold) {
+      } else if (Math.abs(dx) > Math.abs(dy) + threshold || flick) {
         isDraggingRef.current = true; // treat as horizontal swipe
         // lock page scroll while swiping
         try { document.body.style.overflow = 'hidden'; } catch {}
       }
+      lastMoveTimeRef.current = now;
+      lastMoveXRef.current = touch.clientX;
     }
     if (isDraggingRef.current && !isVerticalScrollRef.current) {
       try { e.preventDefault(); } catch {}
@@ -148,7 +158,7 @@ const MobilePlayer = ({ tracks, projectId }) => {
       pendingDxRef.current = dx;
       if (touchRafRef.current == null) {
         touchRafRef.current = requestAnimationFrame(() => {
-          const clamped = Math.max(-140, Math.min(140, pendingDxRef.current));
+          const clamped = Math.max(-120, Math.min(120, pendingDxRef.current));
           x.set(clamped);
           touchRafRef.current = null;
         });
@@ -166,22 +176,19 @@ const MobilePlayer = ({ tracks, projectId }) => {
       touchRafRef.current = null;
     }
     const current = x.get();
-    const threshold = 64; // slightly lighter swipe
+    const threshold = 56; // slightly lighter swipe
     const slideTo = (dir) => {
-      const outX = dir === 'next' ? -320 : 320;
-      const inStart = dir === 'next' ? 320 : -320;
+      const inStart = dir === 'next' ? 300 : -300;
       const newIndex = dir === 'next'
         ? (activeIndex + 1) % tracks.length
         : (activeIndex === 0 ? tracks.length - 1 : activeIndex - 1);
-      // Animate out → swap index → animate in → THEN start audio exactly when new cover is centered
-      animate(x, outX, { duration: 0.16, ease: 'easeOut' }).finished.then(() => {
-        setActiveIndex(newIndex);
-        x.set(inStart);
-        animate(x, 0, { type: 'spring', stiffness: 460, damping: 40 }).finished.then(() => {
-          if (tracks[newIndex]) {
-            playAt(tracks[newIndex].audio, newIndex, { resumeTime: 0, force: true });
-          }
-        });
+      // Swap first, place new card offscreen, then animate in → avoids partial glimpse
+      setActiveIndex(newIndex);
+      x.set(inStart);
+      animate(x, 0, { type: 'spring', stiffness: 580, damping: 36 }).finished.then(() => {
+        if (tracks[newIndex]) {
+          playAt(tracks[newIndex].audio, newIndex, { resumeTime: 0, force: true });
+        }
       });
     };
 

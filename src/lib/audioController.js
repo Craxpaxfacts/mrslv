@@ -6,6 +6,36 @@ let volume01 = 1;
 const preloadCache = new Map(); // src -> HTMLAudioElement
 let userInteracted = false;
 
+// Capability detection
+const canPlayAac = (() => {
+  try {
+    const a = document.createElement('audio');
+    return !!a.canPlayType && a.canPlayType('audio/mp4; codecs="mp4a.40.2"').replace(/no/, '');
+  } catch { return false; }
+})();
+
+const isMobile = (() => {
+  try {
+    return typeof window !== 'undefined' && window.matchMedia && window.matchMedia('(max-width: 767px)').matches;
+  } catch { return false; }
+})();
+
+function resolvePreferredSrc(inputSrc) {
+  // Prefer AAC (.m4a) on mobile when supported, assuming parallel files exist
+  try {
+    if (!inputSrc) return inputSrc;
+    if (isMobile && canPlayAac) {
+      if (inputSrc.endsWith('.mp3')) {
+        const m4a = inputSrc.replace(/\.mp3$/i, '.m4a');
+        return m4a;
+      }
+    }
+    return inputSrc;
+  } catch {
+    return inputSrc;
+  }
+}
+
 let audioCtx = null;
 let gainNode = null;
 let mediaSource = null;
@@ -74,18 +104,19 @@ export function play(src, key, opts = {}) {
   if (ok && audioCtx?.state === 'suspended') {
     try { audioCtx.resume(); } catch {}
   }
+  const resolvedSrc = resolvePreferredSrc(src);
   const switchingTrack = currentKey && currentKey !== key;
   let resumeTime = 0;
   
   if (switchingTrack) {
     try { globalAudio.pause(); } catch {}
     resumeTime = 0;
-  } else if (globalAudio.src === src && !globalAudio.paused) {
+  } else if (globalAudio.src === resolvedSrc && !globalAudio.paused) {
     // Same track is already playing, don't change currentTime
     resumeTime = globalAudio.currentTime;
   } else if (typeof opts.resumeTime === 'number') {
     resumeTime = opts.resumeTime;
-  } else if (globalAudio.src === src) {
+  } else if (globalAudio.src === resolvedSrc) {
     // Same track but paused, keep current position
     resumeTime = globalAudio.currentTime;
   }
@@ -93,10 +124,10 @@ export function play(src, key, opts = {}) {
   // Check if we need to change src (normalize paths for comparison)
   const currentSrc = globalAudio.src;
   const normalizedCurrentSrc = currentSrc ? new URL(currentSrc, window.location.href).pathname : '';
-  const normalizedNewSrc = new URL(src, window.location.href).pathname;
+  const normalizedNewSrc = new URL(resolvedSrc, window.location.href).pathname;
   
   if (normalizedCurrentSrc !== normalizedNewSrc) {
-    globalAudio.src = src;
+    globalAudio.src = resolvedSrc;
     resumeTime = 0;
   }
   
@@ -170,13 +201,15 @@ export function getVolume01() { return volume01; }
 // Best-effort preload to reduce start delay on swipe
 export function preload(src) {
   try {
-    if (!src || preloadCache.has(src)) return;
+    if (!src) return;
+    const resolved = resolvePreferredSrc(src);
+    if (preloadCache.has(resolved)) return;
     const a = new Audio();
     a.preload = 'auto';
-    a.src = src;
+    a.src = resolved;
     // Kick off loading right away for instant start later
     try { a.load(); } catch {}
-    preloadCache.set(src, a);
+    preloadCache.set(resolved, a);
     // simple LRU cap to 4 items
     if (preloadCache.size > 4) {
       const firstKey = preloadCache.keys().next().value;
@@ -192,11 +225,20 @@ export function preloadAll(tracks) {
     tracks.forEach(track => {
       if (track?.audio) {
         preload(track.audio);
+        // also prime neighbors can be handled by caller per index
       }
     });
   } catch {}
 }
 
-export default { play, toggle, pause, subscribe, getState, setVolume01, getVolume01, preload, preloadAll };
+// Optional warmup for network (DNS/TLS) before switching
+export async function warmup(src) {
+  try {
+    const resolved = resolvePreferredSrc(src);
+    await fetch(resolved, { method: 'HEAD', cache: 'force-cache' });
+  } catch {}
+}
+
+export default { play, toggle, pause, subscribe, getState, setVolume01, getVolume01, preload, preloadAll, warmup };
 
 

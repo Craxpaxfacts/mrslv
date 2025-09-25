@@ -92,6 +92,8 @@
   /* overridden by JS when swiping */
   touch-action: pan-y;
   will-change: transform;
+  position: relative;
+  z-index: 1;
 }
 
 .album-card img {
@@ -105,12 +107,14 @@
   position: absolute;
   inset: -2px;
   border-radius: 18px;
+  pointer-events: none;
   background: linear-gradient(135deg, 
-    rgba(255, 255, 255, 0.1) 0%,
-    transparent 50%,
-    rgba(255, 255, 255, 0.05) 100%
+    rgba(255, 255, 255, 0.18) 0%,
+    rgba(255, 255, 255, 0.06) 40%,
+    transparent 100%
   );
-  z-index: -1;
+  z-index: 2;
+  mix-blend-mode: screen;
 }
 
 /* Блок с заголовком и прогрессом удалён */
