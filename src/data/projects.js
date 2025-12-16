@@ -55,7 +55,7 @@ export const projects = [
     className: 'cognesthetic',
     firstName: 'COGNESTHETIC',
     lastName: '',
-    subtitle: 'Experimental, Techno & etc. Sound',
+    subtitle: 'Dub Techno & Experimental',
     description:
       'The project aims to approach music as a space without stylistic boundaries. Here, noise and melody, rhythm and silence intersect, creating different forms of sound. It is an exploration of sound and perception, where music becomes a means of exploration...',
     tracks: [

@@ -76,6 +76,12 @@ body {
   hyphens: auto;
   max-width: 100%;
   will-change: transform;
+  text-shadow: 
+    -0.5px -0.5px 0 #000,
+    0.5px -0.5px 0 #000,
+    -0.5px 0.5px 0 #000,
+    0.5px 0.5px 0 #000,
+    0 0 2px #000;
 }
 
 .title-lastname { margin-top: -0.5em; }
@@ -86,7 +92,13 @@ body {
   font-weight: 400;
   color: #a686ff;
   margin: 1rem 0;
-  text-shadow: 0 0 0.6px rgba(166, 134, 255, 0.55);
+  text-shadow: 
+    -0.5px -0.5px 0 #000,
+    0.5px -0.5px 0 #000,
+    -0.5px 0.5px 0 #000,
+    0.5px 0.5px 0 #000,
+    0 0 2px #000,
+    0 0 0.6px rgba(166, 134, 255, 0.55);
   line-height: 1.2;
   white-space: pre-line;
 }
@@ -96,6 +108,12 @@ body {
   line-height: 1.5;
   color: #fff;
   max-width: 100%;
+  text-shadow: 
+    -0.5px -0.5px 0 #000,
+    0.5px -0.5px 0 #000,
+    -0.5px 0.5px 0 #000,
+    0.5px 0.5px 0 #000,
+    0 0 2px #000;
   margin: 0 auto 1rem auto;
   padding: 0 0.5rem;
 }
