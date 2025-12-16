@@ -84,6 +84,7 @@ const ProjectCarousel = ({ tracks, projectId }) => {
         grabCursor={true}
         centeredSlides={true}
         slidesPerView={'auto'}
+        spaceBetween={20}
         loop={isLoopEnabled}
         watchOverflow={true}
         onBeforeInit={(swiper) => {

@@ -11,6 +11,9 @@ body {
 .app {
   position: relative;
   z-index: 2;
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden; /* Предотвращаем горизонтальный скролл */
 }
 
 /* === Секции === */
@@ -45,6 +48,8 @@ body {
   max-width: 100%;
   margin: 0 auto;
   padding: 0 0.5rem;
+  overflow-x: hidden; /* Предотвращаем выход контента за границы */
+  box-sizing: border-box;
 }
 
 .app > div:first-child .section { padding-top: 1rem; }
@@ -65,7 +70,7 @@ body {
 
 .title-name,
 .title-lastname {
-  font-family: 'Cinzel Decorative', serif;
+  font-family: 'Cinzel Decorative', 'Times New Roman', serif;
   font-weight: 700;
   font-size: clamp(2.5rem, 12vw, 5rem);
   color: #fff;
@@ -82,12 +87,13 @@ body {
     -0.5px 0.5px 0 #000,
     0.5px 0.5px 0 #000,
     0 0 2px #000;
+  font-display: swap; /* Улучшаем загрузку шрифтов */
 }
 
 .title-lastname { margin-top: -0.5em; }
 
 .subtitle {
-  font-family: 'Monsieur La Doulaise', cursive;
+  font-family: 'Monsieur La Doulaise', 'Brush Script MT', cursive;
   font-size: clamp(1.6rem, 3.5vw, 2rem);
   font-weight: 400;
   color: #a686ff;
@@ -101,6 +107,7 @@ body {
     0 0 0.6px rgba(166, 134, 255, 0.55);
   line-height: 1.2;
   white-space: pre-line;
+  font-display: swap; /* Улучшаем загрузку шрифтов */
 }
 
 .description {

@@ -28,37 +28,43 @@ body {
 
 
 .love-light-regular {
-  font-family: "Love Light", cursive;
+  font-family: "Love Light", "Brush Script MT", cursive;
   font-weight: 400;
   font-style: normal;
+  font-display: swap;
 }
 
 .luxurious-script-regular {
-  font-family: "Luxurious Script", cursive;
+  font-family: "Luxurious Script", "Brush Script MT", cursive;
   font-weight: 400;
   font-style: normal;
+  font-display: swap;
 }
 
 .great-vibes-regular {
-  font-family: "Great Vibes", cursive;
+  font-family: "Great Vibes", "Brush Script MT", cursive;
   font-weight: 400;
   font-style: normal;
+  font-display: swap;
 }
 
 .rubik-burned-regular {
-  font-family: "Rubik Burned", system-ui;
+  font-family: "Rubik Burned", "Arial Black", system-ui;
   font-weight: 400;
   font-style: normal;
+  font-display: swap;
 }
 
 .im-fell-great-primer-regular {
-  font-family: "IM Fell Great Primer", serif;
+  font-family: "IM Fell Great Primer", "Times New Roman", serif;
   font-weight: 400;
   font-style: normal;
+  font-display: swap;
 }
 
 .im-fell-great-primer-regular-italic {
-  font-family: "IM Fell Great Primer", serif;
+  font-family: "IM Fell Great Primer", "Times New Roman", serif;
   font-weight: 400;
   font-style: italic;
+  font-display: swap;
 }

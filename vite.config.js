@@ -7,6 +7,9 @@ const base = process.env.VITE_BASE || (repo ? `/${repo}/` : '/');
 
 export default defineConfig({
   plugins: [react()],
-  base: '/',
-  build: {},
+  base: base,
+  build: {
+    assetsDir: 'assets',
+    cssCodeSplit: false,
+  },
 });
