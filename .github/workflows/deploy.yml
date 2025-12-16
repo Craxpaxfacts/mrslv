@@ -32,7 +32,7 @@ jobs:
 
       - name: Build
         env:
-          VITE_BASE: /${{ github.event.repository.name }}/
+          VITE_BASE: /mrslv/
         run: npm run build
 
       - name: Upload artifact
