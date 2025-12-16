@@ -160,4 +160,27 @@
     margin-right: auto;
   }
 }
+
+/* ===== ВРЕМЕННО: ОТКЛЮЧЕНИЕ КЛИКОВ ПО ССЫЛКАМ ===== */
+/* Чтобы вернуть - просто удали весь этот блок */
+.social-button a,
+.social-button a *,
+.social-button .container a,
+.social-button .container a *,
+.social-button a:link,
+.social-button a:visited,
+.social-button a:hover,
+.social-button a:active,
+button.social-button a,
+button.social-button .container a,
+.social-button > .container > a {
+  pointer-events: none !important;
+  cursor: not-allowed !important;
+  user-select: none !important;
+  text-decoration: none !important;
+}
+
+/* Блокируем клики на всей кнопке если открыта */
+.social-button.open .container {
+  pointer-events: none !important;
 }

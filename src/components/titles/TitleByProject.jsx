@@ -21,7 +21,7 @@ export const TitleByProject = ({ id, firstName, lastName }) => {
     return (
       <div className="title-container">
         <CircularText
-          text={'COGNESTHETIC • COGNESTHETIC • '}
+          text={'COGNESTHETIC • COGNESTHETIC • COGNESTHETIC • '}
           spinDuration={25}
           onHover={'goBonkers'}
           className="cognesthetic-circular-title"

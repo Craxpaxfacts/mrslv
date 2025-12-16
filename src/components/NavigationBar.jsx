@@ -3,24 +3,36 @@ import React from 'react';
 import { asset } from '../lib/utils.js';
 import './NavigationBar.css';
 
+// ===== ВРЕМЕННО: ОТКЛЮЧЕНИЕ ПЕРЕХОДОВ ПО ССЫЛКАМ =====
+// Чтобы вернуть - измени на true
+const LINKS_ENABLED = false;
+
 const NavigationBar = () => {
+  const handleLinkClick = (e) => {
+    if (!LINKS_ENABLED) {
+      e.preventDefault();
+      e.stopPropagation();
+      return false;
+    }
+  };
+
   return (
     <button className="social-button">
       <span>FOLLOW</span>
       <div className="container">
-        <a href="https://t.me/the_mrslv" target="_blank" rel="noopener noreferrer">
+        <a href="https://t.me/the_mrslv" target="_blank" rel="noopener noreferrer" onClick={handleLinkClick}>
           <img src={asset('/assets/logos/telegram.svg')} alt="Telegram" />
         </a>
-        <a href="https://instagram.com/themrslv" target="_blank" rel="noopener noreferrer">
+        <a href="https://instagram.com/themrslv" target="_blank" rel="noopener noreferrer" onClick={handleLinkClick}>
           <img src={asset('/assets/logos/instagram.svg')} alt="Instagram" />
         </a>
-        <a href="https://x.com/THEMRSLV" target="_blank" rel="noopener noreferrer">
+        <a href="https://x.com/THEMRSLV" target="_blank" rel="noopener noreferrer" onClick={handleLinkClick}>
           <img src={asset('/assets/logos/twitter-x.svg')} alt="X (Twitter)" />
         </a>
-        <a href="https://reddit.com/u/THEMRSLV" target="_blank" rel="noopener noreferrer">
+        <a href="https://reddit.com/u/THEMRSLV" target="_blank" rel="noopener noreferrer" onClick={handleLinkClick}>
           <img src={asset('/assets/logos/reddit.svg')} alt="Reddit" />
         </a>
-        <a href="https://tiktok.com/" target="_blank" rel="noopener noreferrer">
+        <a href="https://tiktok.com/" target="_blank" rel="noopener noreferrer" onClick={handleLinkClick}>
           <img src={asset('/assets/logos/tik-tok.svg')} alt="TikTok" />
         </a>
       </div>

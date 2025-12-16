@@ -109,3 +109,19 @@
     animation-play-state: running !important;
   }
 }
+
+/* ===== ВРЕМЕННО: ОТКЛЮЧЕНИЕ КЛИКОВ ПО ССЫЛКАМ ===== */
+/* Чтобы вернуть - просто удали этот блок целиком */
+.streamer-loop-container a,
+.streamer-loop-container a:link,
+.streamer-loop-container a:visited,
+.streamer-item a,
+a[href*="soundcloud"],
+a[href*="spotify"],
+a[href*="yandex"],
+a[href*="music.apple"],
+a[href*="youtube"] {
+  pointer-events: none !important;
+  cursor: default !important;
+  user-select: none !important;
+}
